@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 
-import { BiImageAdd, BiTrash, BiChevronDown, BiChevronUp } from "react-icons/bi";
+// import { BiImageAdd, BiTrash, BiChevronDown, BiChevronUp } from "react-icons/bi";
 
 import SolidColor from "./solidColor.js";
-import GradientColor from "./gradientColor.js";
+import GradientColor from "./GradientColor";
 
 
 function BackgroundPicker(props) {
-  const { onClickTrash, onClickAddImage, colorMode, setColorMode, onClickGradient,
+  const { onClickTrash, onClickAddImage, colorMode, setColorMode,
     handleGradientChange, gradient, setBoxBackground, setBoxShadow, setImgFilter, imgFilter, ...rest} = props;
 
   let imageButton;
@@ -22,7 +22,7 @@ function BackgroundPicker(props) {
     imageButton = <><div id='red-split-button'>
       <div>{props.fileName}</div>
       <button id='trash' onClick={onClickTrash}>
-        <BiTrash/>
+        Tx
       </button>
     </div>
     <div id='dark-light-radio'>
@@ -43,7 +43,7 @@ function BackgroundPicker(props) {
   if (colorMode == 0) {
     content = <SolidColor {...rest}/>;
   } else if (colorMode == 1) {
-    content = <GradientColor onClickGradient={onClickGradient} handleGradientChange={handleGradientChange} gradient={gradient}/>;
+    content = <GradientColor handleGradientChange={handleGradientChange} gradient={gradient}/>;
   } else if (colorMode == 2) {
     content = imageButton;
   }

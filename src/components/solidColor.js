@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 import { CustomPicker, CirclePicker } from 'react-color';
 import { HexColorPicker, HexColorInput } from "react-colorful";
-import { IoColorPaletteSharp } from "react-icons/io5";
+// import { IoColorPaletteSharp } from "react-icons/io5";
 
 function SolidColor(props) {
   const [show, setShow] = useState(false);
@@ -23,7 +23,7 @@ function SolidColor(props) {
             <i className="">#</i>
           </div>
           <button className='chevron' onClick={() => setShow(!show)}>
-            <IoColorPaletteSharp />
+            Pt
           </button>
         </div>
 

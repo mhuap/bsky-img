@@ -6,6 +6,13 @@ import Tab from 'react-bootstrap/Tab';
 import UnsplashTab from './unsplashTab.js';
 
 function PhotoUpload(props) {
+  const {
+    onFileChange,
+    useImageURL,
+    imageUrl,
+    setImageURL,
+    // unsplashPhotoClick
+  } = props;
 
   return (
     <Modal
@@ -21,22 +28,22 @@ function PhotoUpload(props) {
         <Tabs fill defaultActiveKey="upload">
           <Tab eventKey="upload" title="Upload">
             <label id='photo-upload'>
-              <input type="file" onChange={props.onFileChange} accept="image/jpeg, image/png"/>
+              <input type="file" onChange={onFileChange} accept="image/jpeg, image/png"/>
                 Browse
             </label>
           </Tab>
           <Tab eventKey="url" title="URL">
             <div id='image-url'>
-              <form action={void(0)} onSubmit={props.useImageURL} >
-                <input type="text" placeholder='https://' ref={props.imgRef}/>
+              <form action={void(0)} onSubmit={useImageURL} >
+                <input type="text" placeholder='https://' value={imageUrl} onChange={(e) => setImageURL(e.target.value)}/>
                 <button>Add</button>
               </form>
             </div>
           </Tab>
           <Tab eventKey="unsplash" title="Unsplash">
-            <UnsplashTab
-              handlePhotoClick={props.unsplashPhotoClick}
-            />
+            {/* <UnsplashTab
+              handlePhotoClick={unsplashPhotoClick}
+            /> */}
           </Tab>
         </Tabs>
       </Modal.Body>

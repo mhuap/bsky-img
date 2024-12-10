@@ -1,6 +1,6 @@
 @use 'index' as *;
 
-#tweet {
+#post {
   text-align: left;
   min-width: 75%;
   margin: 1rem;
@@ -150,11 +150,11 @@
 }
 
 @media (min-width: $breakpoint-lg) {
-  #tweet .media-2 img {
+  #post .media-2 img {
     height: 250px;
   }
 
-  #tweet .tweet-text {
+  #post .tweet-text {
     font-size: 1.2rem;
   }
 

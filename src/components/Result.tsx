@@ -1,16 +1,16 @@
-import React, { useState, useRef, useEffect }from "react";
+import React, { useState, useRef, useEffect, ChangeEvent }from "react";
 import axios from 'axios';
-import { scroller } from 'react-scroll';
+// import { scroller } from 'react-scroll';
 import * as htmlToImage from 'html-to-image';
-import FileSaver from 'file-saver';
 
 import Tweet from './tweet';
 import BackgroundPicker from './backgroundPicker';
 import SideBar from './sideBar';
-import PhotoUpload from './photoUpload';
-import { GRADIENTS } from './gradientColor';
+import PhotoUpload from './PhotoUpload';
+import { GRADIENTS } from './GradientColor';
+import PostDTO from "@/app/api/bsky/PostDTO";
 
-const serverErrorMsg = 'Twitter server error';
+const serverErrorMsg = 'Bluesky server error';
 
 const blackFilter = `linear-gradient(
           rgba(0, 0, 0, 0.7),
@@ -21,8 +21,8 @@ const whiteFilter = `linear-gradient(
           rgba(255, 255, 255, 0.85)
         ), `
 
-function luminosity(color) {
-  const colorRegex = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(color)
+function luminosity(color: string) {
+  const colorRegex = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(color)!;
   const r = parseInt(colorRegex[1], 16)
   const g = parseInt(colorRegex[2], 16)
   const b = parseInt(colorRegex[3], 16)
@@ -30,18 +30,24 @@ function luminosity(color) {
   return Math.round(r*0.299 + g*0.587 + b*0.114);
 }
 
-function Result(props){
+interface ResultProps {
+  post: PostDTO;
+};
+
+function Result({ post }: ResultProps){
+  // props.quoted existed
+
   const [colorMode, setColorMode] = useState(0);
   // 0 = solid, 1 = gradient, 2 = image
 
   const [bgGradient, setBgGradient] = useState(`linear-gradient(to bottom right, #00FF8F, #60EFFF)`);
   const [bgColor, setBgColor] = useState('#E1E8ED');
-  const [gradient, setGradient] = useState('g1');
+  const [gradientId, setGradient] = useState('g1');
 
-  const [bgImg, setBgImg] = useState(null);
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [bgImg, setBgImg] = useState<ArrayBuffer | string | null>(null);
+  // const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [genLoading, setGenLoading] = useState(false);
-  const [resultImg, setResultImg] = useState(null);
+  const [resultImg, setResultImg] = useState<string | null>(null);
   const [imgFilter, setImgFilter] = useState('default');
 
   const [boxRounded, setBoxRounded] = useState(true);
@@ -53,22 +59,24 @@ function Result(props){
 
   const [modalShow, setModalShow] = React.useState(false);
 
-  const imageUrlRef = useRef();
+  // const imageUrlRef = useRef(); // PhotoUpload: imgRef
+  const [imageUrl, setImageUrl] = useState<string>("");
 
-  const handleColorChange = (color, event) => setBgColor(color.hex);
+  const handleColorChange = (color: any, event: any) => setBgColor(color.hex);
 
-  const onFileChange = () => {
-    const file = event.target.files[0];
-    setSelectedFile(file);
+  // const onFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+  //   // const file = e.target?.files[0];
+  //   const files = e.target?.files;
+  //   if (files){
+  //     const file = files[0];
+  //     setSelectedFile(file);
+  //     let reader = new FileReader();
+  //     reader.onload = () => {setBgImg(reader.result)};
 
-    var reader = new FileReader();
-    reader.onload = function(event) {
-      setBgImg(event.target.result)
-    };;
-
-    reader.readAsDataURL(file);
-    setModalShow(false);
-  }
+  //     reader.readAsDataURL(file);
+  //     setModalShow(false);
+  //   }
+  // }
 
   const onClickAddImage = () => {
     setModalShow(true);
@@ -77,15 +85,15 @@ function Result(props){
 
   const onClickTrash = () => {
     // setSolidColorMode(true);
-    setSelectedFile(null);
+    // setSelectedFile(null);
     setBgImg(null);
     setImgFilter('default');
   }
 
-  const onGenerate = e => {
+  const onGenerate =(e: any) => {
     e.preventDefault();
     setGenLoading(true)
-    const node = document.querySelector("#preview .sq-container");
+    const node: HTMLElement = document.querySelector("#preview .sq-container")!;
     // const node = document.getElementByID('form-input');
     const exportSize = 2;
 
@@ -104,63 +112,65 @@ function Result(props){
     }
 
     htmlToImage.toPng(node)
-    .then(function (dataUrl) {
-      setResultImg(dataUrl)
+    .then((dataUrl) => {
+      setResultImg(dataUrl);
     })
     .catch(function (error) {
         console.error('dom-to-image: oops, something went wrong!', error);
     });
   }
 
-  const useImageURL = (e) => {
+  const useImageURL = (e: any) => {
     e.preventDefault();
 
-    const src = imageUrlRef.current.value;
-    setSelectedFile({name: 'Image from URL'});
+    const src = imageUrl;
+    // setSelectedFile({name: 'Image from URL'});
     setBgImg(src);
     setModalShow(false);
   }
 
-  const unsplashPhotoClick = (e, download_location) => {
-    e.preventDefault()
+  // const unsplashPhotoClick = (e, downloadLocation) => {
+  //   e.preventDefault()
 
-    const src = e.target.src;
-    setSelectedFile({name: 'Unsplash image'});
-    setBgImg(src);
-    setModalShow(false);
-    axios.post('/api/unsplash', {
-      downloadLocation: download_location
-    })
-    .catch(error => console.log(error))
+  //   const src = e.target.src;
+  //   // setSelectedFile({name: 'Unsplash image'});
+  //   setBgImg(src);
+  //   setModalShow(false);
+  //   axios.post('/api/unsplash', {
+  //     downloadLocation
+  //   })
+  //   .catch(error => console.log(error))
+  // }
+
+  // const onClickGradient = (a, b) => {
+  //   // setSelectedFile(null);
+  //   setBgImg("");
+  // }
+
+  const handleGradientChange = (e: any) => {
+    const gradient: string = e.target.value;
+
+    setGradient(gradient);
+    const colorA = GRADIENTS.find(g => g.id === gradient)?.start;
+    const colorB = GRADIENTS.find(g => g.id === gradient)?.end;
+    setBgGradient(`linear-gradient(to bottom right, ${colorA}, ${colorB})`);
   }
 
-  const onClickGradient = (a, b) => {
-    setSelectedFile(null);
-    setBgImg(null);
-  }
-
-  const handleGradientChange = (e) => {
-    const g = e.target.value;
-
-    setGradient(g);
-    setBgGradient(`linear-gradient(to bottom right, ${GRADIENTS[g][0]}, ${GRADIENTS[g][1]})`);
-  }
-
-  // console.log(props.tweet);
-  if (props.mainTweet === serverErrorMsg){
+  // console.log(tweet);
+  if (!post){
     return <p>{serverErrorMsg}</p>
   }
 
   let bgSection;
   let bgStyle = {background: bgColor};
-  let textStyle = {color: null};
+  let textColor = '#000';
 
   if (colorMode == 0 && !boxBackground){
     const l = luminosity(bgColor);
     if (l >= 135){
-      textStyle.color = '#000';
+      textColor = '#000';
     } else {
-      textStyle.color = '#fff';
+      textColor = '#fff';
     }
   } else if (bgImg && colorMode == 2) {
     const defString = `url(${bgImg}) ${bgColor}`
@@ -168,11 +178,11 @@ function Result(props){
       bgStyle.background = defString;
     } else if (imgFilter == 'dark'){
       bgStyle.background = blackFilter + defString;
-      textStyle.color = '#fff';
+      textColor = '#fff';
     } else {
       // light
       bgStyle.background = whiteFilter + defString;
-      textStyle.color = '#000';
+      textColor = '#000';
     }
   } else if (colorMode == 1) {
     bgStyle.background = bgGradient;
@@ -185,12 +195,12 @@ function Result(props){
     content =<div style={{maxWidth: '530px', margin: '0 auto'}}>
 
     <img
-      id='tweet-img'
+      id='bsky-img'
       src={resultImg}
-      alt={`Tweet that says: ${props.mainTweet.tweet.text}`}
+      alt={`Bluesky post that says: ${post.text}`}
     />
 
-      <small id='backup-link'><a href={resultImg} download={`tweet by ${props.mainTweet.user.username}`}>download here</a></small>
+      <small id='backup-link'><a href={resultImg} download={`Bluesky post by ${post.author.handle}`}>download here</a></small>
     </div>
   } else {
     content = <>
@@ -200,15 +210,13 @@ function Result(props){
           <div className='sq-container' style={bgStyle}>
             <div className='before'></div>
             <Tweet
-              tweet={props.mainTweet.tweet}
-              user={props.mainTweet.user}
-              quoted={props.quoted}
+              post={post}
               boxRounded={boxRounded}
               boxBorder={boxBorder}
               boxBackground={boxBackground}
               boxShadow={boxShadow}
               imageCrop={imageCrop}
-              boxText={textStyle}
+              textColor={textColor}
             />
           </div>
         </div>
@@ -220,25 +228,25 @@ function Result(props){
         onSwitchBorder={() => setBoxBorder(!boxBorder)}
         onSwitchBoxBackground={() => setBoxBackground(!boxBackground)}
         onSwitchShadow={() => setBoxShadow(!boxShadow)}
-        imageCropDisabled={props.mainTweet.tweet.media && props.mainTweet.tweet.media.length == 1}
+        // imageCropDisabled={mainTweet.tweet.media && mainTweet.tweet.media.length == 1}
         onSwitchImageCrop={() => setImageCrop(!imageCrop)}
         solid={colorMode != 1}
         boxBackground={boxBackground}
         genLoading={genLoading}
       >
         <BackgroundPicker
-          onChange = {handleColorChange}
+          onChange={handleColorChange}
           color={bgColor}
           onClickAddImage={onClickAddImage}
           onClickTrash={onClickTrash}
-          fileName={selectedFile ? selectedFile.name : null}
+          // fileName={selectedFile?.name}
           colorMode={colorMode}
           setColorMode={setColorMode}
           setBoxBackground={setBoxBackground}
           setBoxShadow={setBoxShadow}
-          onClickGradient={onClickGradient}
+          // onClickGradient={onClickGradient}
           handleGradientChange={handleGradientChange}
-          gradient={gradient}
+          gradient={gradientId}
           imgFilter={imgFilter}
           setImgFilter={setImgFilter}
         />
@@ -246,17 +254,18 @@ function Result(props){
         <PhotoUpload
           show={modalShow}
           onHide={() => setModalShow(false)}
-          onFileChange={onFileChange}
+          // onFileChange={onFileChange}
           useImageURL={useImageURL}
-          imgRef={imageUrlRef}
-          unsplashPhotoClick={unsplashPhotoClick}
+          imageUrl={imageUrl}
+          setImageUrl={setImageUrl}
+          // unsplashPhotoClick={unsplashPhotoClick}
         />
 
       </SideBar>
     </>
   }
 
-  return <div id='result'>{content}</div>;
+  return <>{content}</>;
 }
 
 

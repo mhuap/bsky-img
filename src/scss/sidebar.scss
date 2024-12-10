@@ -369,7 +369,8 @@ button#add-image {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  // margin-top: 8px;
+  gap: 8px;
+  margin-top: 8px;
 
   input {
     display: none;
@@ -385,8 +386,9 @@ button#add-image {
   height: 28px;
   width: 56px;
   border-radius: 4px;
-  margin-right: 8px !important;
-  margin-bottom: 0 !important;
+  margin: 0 !important;
+  // margin-right: 8px !important;
+  // margin-bottom: 0 !important;
   cursor: pointer;
 }
 
