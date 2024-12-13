@@ -3,7 +3,7 @@ import axios from 'axios';
 // import { scroller } from 'react-scroll';
 import * as htmlToImage from 'html-to-image';
 
-import Tweet from './tweet';
+import Tweet from './Tweet';
 import BackgroundPicker from './backgroundPicker';
 import SideBar from './sideBar';
 import PhotoUpload from './PhotoUpload';
@@ -215,7 +215,7 @@ function Result({ post }: ResultProps){
               boxBorder={boxBorder}
               boxBackground={boxBackground}
               boxShadow={boxShadow}
-              imageCrop={imageCrop}
+              // imageCrop={imageCrop}
               textColor={textColor}
             />
           </div>

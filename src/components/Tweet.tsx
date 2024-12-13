@@ -4,6 +4,7 @@ import regexifyString from "regexify-string";
 
 import Poll from './poll.js';
 import axios from "axios";
+import PostDTO from "@/app/api/bsky/PostDTO.js";
 
 function Tweet({
   post,
@@ -11,30 +12,19 @@ function Tweet({
   boxBorder,
   boxBackground,
   boxShadow,
-  imageCrop,
+  // imageCrop,
   textColor
+} : {
+  post: PostDTO,
+  boxRounded: boolean,
+  boxBorder: boolean,
+  boxBackground: boolean,
+  boxShadow: boolean,
+  textColor: string,
 }){
-  const [avatarSrc, setAvatarSrc] = useState(null);
+  const [avatarSrc, setAvatarSrc] = useState<string | undefined>();
   // TODO: deal with media
-
-  useEffect(() => {
-    const endpoint = "https://bsky.social/xrpc/com.atproto.sync.getBlob"
-    axios.get(endpoint, {
-      params: {
-        did: post.author.did,
-        cid: post.author.avatarCid
-      },
-      responseType: 'blob'
-    })
-      .then(result => {
-        // console.log(result);
-        const uri = URL.createObjectURL(result.data);
-        setAvatarSrc(uri);
-      }).catch(e => {
-        console.log("uhoh");
-        console.error(e);
-      })
-  }, [post]);
+  
   // TODO: is this still necessary?
   // ?? unencode html entities
   // const doc = new DOMParser().parseFromString(post.text, "text/html");
@@ -61,7 +51,7 @@ function Tweet({
     <div id='post' style={boxStyle}>
       <div>
         {/* <img className='avatar' crossOrigin="anonymous" src={post.author.avatar} /> */}
-        <img className='avatar' crossOrigin="anonymous" src={avatarSrc} />
+        <img className='avatar' crossOrigin="anonymous" src={post.author.avatarUrl} />
         <div className='account-group'>
           <div className='name'>
             <span><b>{post.author.displayName}</b></span>
@@ -70,7 +60,7 @@ function Tweet({
         </div>
       </div>
       <div className='tweet-text'>{post.text}</div>
-      <div className='date'>{post.date}</div>
+      <div className='date'>{post.date.toString()}</div>
     </div>
   )
 };
