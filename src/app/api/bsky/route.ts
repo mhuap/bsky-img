@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
   try {
     const didResponse = await resolveHandle(handle);
     const postsResponse = await getPosts(didResponse.did, postId);
-    const post = new PostDTO(postsResponse.posts[0]);
+    const post = new PostDTO(postsResponse.posts[0], didResponse.did);
     return Response.json(post);
   } catch (e) {
     console.error(e);

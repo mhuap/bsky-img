@@ -1,95 +1,117 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+'use client';
+import React, { useState, useRef, useEffect } from "react";
+// import axios from "axios";
+// import { scroller } from "react-scroll";
+import Image from 'next/image';
+
+import Result from "@/components/Result";
+import Arrow from "@/components/arrow.js";
+import Hero from "@/components/Hero";
+import { validate } from "@/util/handlingURL";
+import axios from "axios";
+
+import diagram from "../../public/diagram.png";
+import PostDTO from "./api/bsky/PostDTO";
+import { Spinner } from "react-bootstrap";
 
 export default function Home() {
-  return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>src/app/page.tsx</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [loading, setLoading] = useState(false);
+  const [blank, setBlank] = useState(true);
+  const [inputError, setInputError] = useState(false);
+  const [serverError, setServerError] = useState(null);
+  const [urlQuery, setUrlQuery] = useState(null);
+  const [urlInput, setUrlInput] = useState("");
+  const [post, setPost] = useState<PostDTO | null>(null);
+  // const [mainTweet, setMainTweet] = useState(new TweetEntity());
+  // const [quoted, setQuoted] = useState(new TweetEntity());
 
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
+  // const result = useRef(null); // div result-wrapper
+  // const urlInput = useRef(null);
+
+  const handleSubmit = (e: any) => {
+    e.preventDefault();
+
+    // scroller.scrollTo("result-wrapper", {
+    //   smooth: true,
+    // });
+
+    // validate url
+    // const groups = validate("https://bsky.app/profile/jessiegender.bsky.social/post/3lbtqamikfs2d");
+    const groups = validate(urlInput);
+    if (groups != null) {
+      setBlank(false);
+      setInputError(false);
+      setLoading(true);
+      axios.get("/api/bsky", {
+        params: groups
+      }).then(res => {
+        // console.log(res);
+        setLoading(false);
+        setPost(res.data);
+      }).catch(err => console.log(err))
+      // axios get
+    } else {
+      setInputError(true);
+    }
+    // setBlank, setInputError, createTweet
+    console.log("handling submission");
+  };
+
+  let res;
+  if (blank) {
+    res = <Image
+      id="diagram"
+      src={diagram} alt="usage diagram"
+      fill
+      priority
+    />;
+  } else if (loading) {
+    res = (
+      <Spinner animation="border" role="status">
+        <span className="visually-hidden">Loading...</span>
+      </Spinner>
+    );
+  } else if (serverError) {
+    res = <span className="error-text">{serverError}</span>;
+  } else if (post) {
+    // res = <Result blank={blank} mainTweet={mainTweet} quoted={quoted} />;
+    res = <Result post={post} />
+    // res = <div>{JSON.stringify(post)}</div>
+  }
+
+  return (
+    <>
+      <div id="container">
+        <div id="top-wrapper">
+          <Hero />
+          <form id="top-form" onSubmit={handleSubmit}>
+            <label className="section">post URL</label>
+            <div id="form-input-group" className={inputError ? "error" : ""}>
+              <input
+                id="url-input"
+                type="text"
+                value={urlInput}
+                onChange={(e) => setUrlInput(e.target.value)}
+                name="url"
+                placeholder="bsky.app/profile/something.bsky.social/post/fjdk4fjdksaf"
+              // defaultValue={router.query.tweet ? router.query.tweet : ""}
+              />
+              <button className="input-overlay">
+                <Arrow />
+              </button>
+            </div>
+            {inputError && <p className="error-text">Not a valid bluesky URL</p>}
+          </form>
         </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+
+        <section id="result-wrapper" className={loading ? "loading" : ""}>
+          {res}
+        </section>
+        <footer>
+          Created by{" "}
+          <a href="https://mhuap.github.io">Matias Huapaya</a>.
+        </footer>
+      </div>
+    </>
   );
 }
