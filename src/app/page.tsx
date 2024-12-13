@@ -28,7 +28,7 @@ export default function Home() {
   // const result = useRef(null); // div result-wrapper
   // const urlInput = useRef(null);
 
-  const handleSubmit = (e: any) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
 
     // scroller.scrollTo("result-wrapper", {
@@ -36,20 +36,30 @@ export default function Home() {
     // });
 
     // validate url
-    // const groups = validate("https://bsky.app/profile/jessiegender.bsky.social/post/3lbtqamikfs2d");
-    const groups = validate(urlInput);
+    const groups = validate("https://bsky.app/profile/jessiegender.bsky.social/post/3lbtqamikfs2d");
+    // const groups = validate(urlInput);
     if (groups != null) {
       setBlank(false);
       setInputError(false);
       setLoading(true);
-      axios.get("/api/bsky", {
-        params: groups
-      }).then(res => {
-        // console.log(res);
-        setLoading(false);
-        setPost(res.data);
-      }).catch(err => console.log(err))
-      // axios get
+      const postDTO: PostDTO = await axios.get("/api/bsky", {
+          params: groups
+        })
+        .then(res => res.data)
+        .catch(err => console.log(err));
+
+      const endpoint = "https://bsky.social/xrpc/com.atproto.sync.getBlob"
+      const blobUrl = await axios.get(endpoint, {
+        params: { did: postDTO.author.did, cid: postDTO.author.avatarCid },
+        responseType: 'blob'
+      })
+      .then(result => {
+        const url = URL.createObjectURL(result.data);
+        return url;
+      })
+      postDTO.author.avatarUrl = blobUrl;
+      setPost(postDTO);
+      setLoading(false);
     } else {
       setInputError(true);
     }
