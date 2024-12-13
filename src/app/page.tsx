@@ -36,8 +36,8 @@ export default function Home() {
     // });
 
     // validate url
-    const groups = validate("https://bsky.app/profile/jessiegender.bsky.social/post/3lbtqamikfs2d");
-    // const groups = validate(urlInput);
+    // const groups = validate("https://bsky.app/profile/jessiegender.bsky.social/post/3lbtqamikfs2d");
+    const groups = validate(urlInput);
     if (groups != null) {
       setBlank(false);
       setInputError(false);

@@ -1,16 +1,21 @@
+import { avatarUriToCid } from "./getPost";
+
 export default class PostDTO {
   author: {
     handle: string,
     displayName: string,
-    avatar: string
+    avatarCid: string,
+    did: string,
   };
   text: string;
   date: Date;
 
-  constructor(post: any) {
+  constructor(post: any, did: string) {
     const { handle, displayName, avatar } = post.author;
-    this.author = { handle, displayName, avatar }
+    const avatarCid = avatarUriToCid(post.author.avatar)!;
+    this.author = { handle, displayName, avatarCid, did };
     this.text = post.record.text;
     this.date = post.record.createdAt;
   }
+  
 }

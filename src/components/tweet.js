@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+'use client'
+import React, { useEffect, useState } from "react";
 import regexifyString from "regexify-string";
 
 import Poll from './poll.js';
+import axios from "axios";
 
 function Tweet({
   post,
@@ -12,9 +14,27 @@ function Tweet({
   imageCrop,
   textColor
 }){
-
+  const [avatarSrc, setAvatarSrc] = useState(null);
   // TODO: deal with media
 
+  useEffect(() => {
+    const endpoint = "https://bsky.social/xrpc/com.atproto.sync.getBlob"
+    axios.get(endpoint, {
+      params: {
+        did: post.author.did,
+        cid: post.author.avatarCid
+      },
+      responseType: 'blob'
+    })
+      .then(result => {
+        // console.log(result);
+        const uri = URL.createObjectURL(result.data);
+        setAvatarSrc(uri);
+      }).catch(e => {
+        console.log("uhoh");
+        console.error(e);
+      })
+  }, [post]);
   // TODO: is this still necessary?
   // ?? unencode html entities
   // const doc = new DOMParser().parseFromString(post.text, "text/html");
@@ -40,7 +60,8 @@ function Tweet({
   return (
     <div id='post' style={boxStyle}>
       <div>
-        <img className='avatar' crossOrigin="anonymous" src={post.author.avatar} />
+        {/* <img className='avatar' crossOrigin="anonymous" src={post.author.avatar} /> */}
+        <img className='avatar' crossOrigin="anonymous" src={avatarSrc} />
         <div className='account-group'>
           <div className='name'>
             <span><b>{post.author.displayName}</b></span>

@@ -55,7 +55,6 @@ function GradientSwatch({
   // const colorA = GRADIENTS[id][0];
   // const colorB = GRADIENTS[id][1];
   const colorA = GRADIENTS.find(g => g.id === id)?.start;
-  console.log(id)
   const colorB = GRADIENTS.find(g => g.id === id)?.end;
   const background = `linear-gradient(to right, ${colorA}, ${colorB})`;
 

@@ -1,14 +1,12 @@
 import axios from "axios";
 import RequestError from "./requestError";
 
-export function urlMatchGroups(url: string | null){
-  if (url != null) {
-    const regexGen =
-    /(?:https:\/\/)?bsky\.app\/profile\/(?<handle>(?:[a-z]|[A-Z]|\d|-|\.)+)\/post\/(?<postId>(?:\d|[a-z])+)/;
-    const found = url?.match(regexGen);
-    if (found != null && found.groups !== undefined) {
-      return found.groups;
-    }
+export function avatarUriToCid(uri: string){
+  console.log("AVATAR CID")
+  const reg = /https:\/\/cdn\.bsky\.app\/img\/avatar\/plain\/did:plc:(?:[a-z]|\d)+\/(?<cid>(?:[a-z]|\d)+)/;
+  const found = uri.match(reg);
+  if (found != null && found.groups !== undefined) {
+    return found.groups.cid;
   }
   return null;
 }

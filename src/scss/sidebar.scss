@@ -213,6 +213,7 @@
       left: 2rem;
     }
   }
+
   input:checked + label {
     background-color: white;
     box-shadow: rgba(0,0,0,0.15) 0px 0px 4px 1px;
@@ -239,7 +240,6 @@
   border-radius: $rounded-radius;
   border: $border-lightgrey;
   margin: 8px auto;
-
 }
 
 .modal.show .modal-dialog {
@@ -360,8 +360,6 @@ button#add-image {
         }
       }
     }
-
-
   }
 }
 
