@@ -4,11 +4,12 @@ import axios from 'axios';
 import * as htmlToImage from 'html-to-image';
 
 import Tweet from './Tweet';
-import BackgroundPicker from './backgroundPicker';
-import SideBar from './sideBar';
+import BackgroundPicker from './BackgroundPicker';
+import Sidebar from './Sidebar';
 import PhotoUpload from './PhotoUpload';
 import { GRADIENTS } from './GradientColor';
 import PostDTO from "@/app/api/bsky/PostDTO";
+import { AspectRatio } from "./ui/aspect-ratio";
 
 const serverErrorMsg = 'Bluesky server error';
 
@@ -42,10 +43,10 @@ function Result({ post }: ResultProps){
 
   const [bgGradient, setBgGradient] = useState(`linear-gradient(to bottom right, #00FF8F, #60EFFF)`);
   const [bgColor, setBgColor] = useState('#E1E8ED');
-  const [gradientId, setGradient] = useState('g1');
+  const [gradientId, setGradientId] = useState('g1');
 
   const [bgImg, setBgImg] = useState<ArrayBuffer | string | null>(null);
-  // const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [genLoading, setGenLoading] = useState(false);
   const [resultImg, setResultImg] = useState<string | null>(null);
   const [imgFilter, setImgFilter] = useState('default');
@@ -54,8 +55,9 @@ function Result({ post }: ResultProps){
   const [boxBorder, setBoxBorder] = useState(false);
   const [boxBackground, setBoxBackground] = useState(true);
   const [boxShadow, setBoxShadow] = useState(true);
-  const [imageCrop, setImageCrop] = useState(false);
-  const [boxText, setBoxText] = useState(null);
+  // TODO:
+  // const [imageCrop, setImageCrop] = useState(false);
+  // const [boxText, setBoxText] = useState(null);
 
   const [modalShow, setModalShow] = React.useState(false);
 
@@ -64,19 +66,23 @@ function Result({ post }: ResultProps){
 
   const handleColorChange = (color: any, event: any) => setBgColor(color.hex);
 
-  // const onFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-  //   // const file = e.target?.files[0];
-  //   const files = e.target?.files;
-  //   if (files){
-  //     const file = files[0];
-  //     setSelectedFile(file);
-  //     let reader = new FileReader();
-  //     reader.onload = () => {setBgImg(reader.result)};
+  useEffect(() => {
+    console.log("changed color:", bgColor);
+  }, [bgColor])
 
-  //     reader.readAsDataURL(file);
-  //     setModalShow(false);
-  //   }
-  // }
+  const onFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    // const file = e.target?.files[0];
+    const files = e.target?.files;
+    if (files){
+      const file = files[0];
+      setSelectedFile(file);
+      console.log("file read:", file.name);
+      let reader = new FileReader();
+      reader.onload = () => {setBgImg(reader.result)};
+      reader.readAsDataURL(file);
+      setModalShow(false);
+    }
+  }
 
   const onClickAddImage = () => {
     setModalShow(true);
@@ -85,7 +91,7 @@ function Result({ post }: ResultProps){
 
   const onClickTrash = () => {
     // setSolidColorMode(true);
-    // setSelectedFile(null);
+    setSelectedFile(null);
     setBgImg(null);
     setImgFilter('default');
   }
@@ -93,7 +99,7 @@ function Result({ post }: ResultProps){
   const onGenerate =(e: any) => {
     e.preventDefault();
     setGenLoading(true)
-    const node: HTMLElement = document.querySelector("#preview .sq-container")!;
+    const node: HTMLElement = document.getElementById("preview")!;
     // const node = document.getElementByID('form-input');
     const exportSize = 2;
 
@@ -150,7 +156,7 @@ function Result({ post }: ResultProps){
   const handleGradientChange = (e: any) => {
     const gradient: string = e.target.value;
 
-    setGradient(gradient);
+    setGradientId(gradient);
     const colorA = GRADIENTS.find(g => g.id === gradient)?.start;
     const colorB = GRADIENTS.find(g => g.id === gradient)?.end;
     setBgGradient(`linear-gradient(to bottom right, ${colorA}, ${colorB})`);
@@ -166,6 +172,7 @@ function Result({ post }: ResultProps){
   let textColor = '#000';
 
   if (colorMode == 0 && !boxBackground){
+    // solid
     const l = luminosity(bgColor);
     if (l >= 135){
       textColor = '#000';
@@ -173,7 +180,8 @@ function Result({ post }: ResultProps){
       textColor = '#fff';
     }
   } else if (bgImg && colorMode == 2) {
-    const defString = `url(${bgImg}) ${bgColor}`
+    // image
+    const defString = `center/cover url(${bgImg}) ${bgColor}`
     if (imgFilter == 'default'){
       bgStyle.background = defString;
     } else if (imgFilter == 'dark'){
@@ -185,6 +193,7 @@ function Result({ post }: ResultProps){
       textColor = '#000';
     }
   } else if (colorMode == 1) {
+    // gradient
     bgStyle.background = bgGradient;
   }
 
@@ -192,23 +201,25 @@ function Result({ post }: ResultProps){
   let content;
 
   if (resultImg){
-    content =<div style={{maxWidth: '530px', margin: '0 auto'}}>
+    content =<div className="mx-w-[530px] mx-auto">
 
     <img
-      id='bsky-img'
+      className="w-full"
       src={resultImg}
       alt={`Bluesky post that says: ${post.text}`}
     />
 
-      <small id='backup-link'><a href={resultImg} download={`Bluesky post by ${post.author.handle}`}>download here</a></small>
+      <small className="text-secondary text-xs my-2"><a href={resultImg} download={`Bluesky post by ${post.author.handle}`}>download here</a></small>
     </div>
   } else {
     content = <>
-      <div id='preview'>
-        <label className='section'>Preview</label>
-        <div className='sq-container-container'>
-          <div className='sq-container' style={bgStyle}>
-            <div className='before'></div>
+      <div className="w-full md:w-2/3">
+        <label className='section-label' >Preview</label>
+        <div id="preview"className='mb-3 w-full'>
+          <AspectRatio ratio={1}
+            className="flex items-center shadow-[inset_rgba(0,0,0,.11)_0_0_0_1px] bg-center bg-cover"
+            style={bgStyle}
+          >
             <Tweet
               post={post}
               boxRounded={boxRounded}
@@ -218,29 +229,43 @@ function Result({ post }: ResultProps){
               // imageCrop={imageCrop}
               textColor={textColor}
             />
-          </div>
+          </AspectRatio>
+          {/* <div className='flex justify-center items-center' style={bgStyle}>
+            <div className='pt-[100%]'></div>
+            <Tweet
+                post={post}
+                boxRounded={boxRounded}
+                boxBorder={boxBorder}
+                boxBackground={boxBackground}
+                boxShadow={boxShadow}
+                // imageCrop={imageCrop}
+                textColor={textColor}
+              />
+          </div> */}
         </div>
       </div>
 
-      <SideBar
+      <Sidebar
         onGenerate={onGenerate}
         onSwitchRounded={() => setBoxRounded(!boxRounded)}
         onSwitchBorder={() => setBoxBorder(!boxBorder)}
         onSwitchBoxBackground={() => setBoxBackground(!boxBackground)}
         onSwitchShadow={() => setBoxShadow(!boxShadow)}
         // imageCropDisabled={mainTweet.tweet.media && mainTweet.tweet.media.length == 1}
-        onSwitchImageCrop={() => setImageCrop(!imageCrop)}
+        // onSwitchImageCrop={() => setImageCrop(!imageCrop)}
         solid={colorMode != 1}
         boxBackground={boxBackground}
         genLoading={genLoading}
       >
         <BackgroundPicker
           onChange={handleColorChange}
-          color={bgColor}
+          setBgColor={setBgColor}
+          hex={bgColor}
           onClickAddImage={onClickAddImage}
           onClickTrash={onClickTrash}
-          // fileName={selectedFile?.name}
-          colorMode={colorMode}
+          fileName={selectedFile?.name}
+          // fileName={null}
+          // colorMode={colorMode}
           setColorMode={setColorMode}
           setBoxBackground={setBoxBackground}
           setBoxShadow={setBoxShadow}
@@ -249,9 +274,16 @@ function Result({ post }: ResultProps){
           gradient={gradientId}
           imgFilter={imgFilter}
           setImgFilter={setImgFilter}
+          show={modalShow}
+          onHide={() => setModalShow(false)}
+          onFileChange={onFileChange}
+          useImageURL={useImageURL}
+          imageUrl={imageUrl}
+          setImageUrl={setImageUrl}
+          // unsplashPhotoClick={unsplashPhotoClick}
         />
 
-        <PhotoUpload
+        {/* <PhotoUpload
           show={modalShow}
           onHide={() => setModalShow(false)}
           // onFileChange={onFileChange}
@@ -259,9 +291,9 @@ function Result({ post }: ResultProps){
           imageUrl={imageUrl}
           setImageUrl={setImageUrl}
           // unsplashPhotoClick={unsplashPhotoClick}
-        />
+        /> */}
 
-      </SideBar>
+      </Sidebar>
     </>
   }
 

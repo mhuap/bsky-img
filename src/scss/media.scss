@@ -1,0 +1,98 @@
+.tweet-media {
+  margin-top: 1rem;
+  display: flex;
+
+  img {
+    width: 100%;
+    display: block;
+  }
+}
+
+.quoted-tweet-media {
+  margin: 1rem 0 0 0;
+}
+
+.media-1 {
+  padding-bottom: 56.25%;
+  background-position: center;
+  background-size: cover;
+}
+
+.media-2, .media-3, .media-4 {
+  padding-bottom: 50%;
+  position: relative;
+
+  .media-grid {
+    display: grid;
+    gap: 0.125rem;
+    height: 100%;
+    position: absolute;
+  }
+
+  div {
+    background-size: cover;
+    background-position: center;
+    width: 100%;
+  }
+}
+
+.media-2 .media-grid {
+  grid-template-rows: 1fr;
+  grid-template-columns: 1fr 1fr;
+}
+
+.media-4 .media-grid, .media-3 .media-grid {
+  grid-template-rows: 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
+}
+
+#quoted {
+border: $border-lightgrey;
+padding: 1rem;
+margin-top: 1rem;
+border-radius: $rounded-radius;
+
+.tweet-text {
+  font-size: 14px;
+}
+}
+
+#poll {
+margin-top: 8px;
+
+.poll-option {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 12px;
+
+  .poll-bar {
+    position: absolute;
+    height: 32px;
+    background: rgb(196, 207, 214);
+    z-index: 0;
+    left: 0;
+    border-radius: 4px 0 0 4px;
+  }
+
+  span {
+    position: relative;
+    z-index: 2;
+  }
+}
+}
+
+@media (min-width: $breakpoint-lg) {
+  #post .media-2 img {
+    height: 250px;
+  }
+
+  #post .tweet-text {
+    font-size: 1.2rem;
+  }
+
+  #quoted .tweet-text {
+    font-size: 1rem;
+  }
+}

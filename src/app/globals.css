@@ -1,0 +1,69 @@
+/* @tailwind base;
+@tailwind components;
+@tailwind utilities; */
+@import "tailwindcss";
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap");
+
+@theme {
+  --color-primary: #005fcc;
+  --color-primary-dark: #004594;
+  --color-foreground: #14171a;
+  --color-secondary: #576673;
+  /* --color-secondary: #657786; */
+  --color-input: #d3dade;
+  --color-input-light: #e1e8ed;
+  --color-muted: #f2f6f8;
+  --color-danger: var(--color-red-700);
+  /* --color-input: oklch(0.871 0.006 286.286); */
+
+  --spacing-wsm: 36rem; /* 600px */
+  --spacing-wmd: 50rem; /* 800px */
+}
+
+@layer base {
+  /* :root {
+    --radius: 0.5rem;
+    --color-dark: #14171a;
+    --color-blue: #005fcc;
+  } */
+  body {
+    font-family: "Inter", Helvetica, Arial, sans-serif;
+  }
+
+  a, a:hover, a:visited {
+    color: var(--color-primary);
+    text-decoration: none;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+}
+
+@layer components {
+  .section-label {
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 0.25px;
+    text-transform: uppercase;
+  }
+
+  /* #hex-color-picker .react-colorful{
+    width: auto;
+  } */
+}
+
+/* body {
+  font-family: "Inter", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+} */
+
+/* ::selection {
+  background-color: $color-blue-transparent;
+} */
+
+#hex-color-picker .react-colorful{
+  width: auto;
+}

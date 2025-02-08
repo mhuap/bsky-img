@@ -37,22 +37,22 @@
 }
 
 #customization {
-  width: 100%;
-  text-align: left;
-  color: $color-grey;
+  // width: 100%;
+  // text-align: left;
+  // color: $color-grey;
 
-  #switches {
-    margin-bottom: 24px;
+  // #switches {
+  //   margin-bottom: 24px;
 
-    .form-check-input:disabled {
-      opacity: 0.2;
-    }
+  //   .form-check-input:disabled {
+  //     opacity: 0.2;
+  //   }
 
-    .form-check-input:checked {
-      background-color: $color-blue;
-      border-color: $color-blue;
-    }
-  }
+  //   .form-check-input:checked {
+  //     background-color: $color-blue;
+  //     border-color: $color-blue;
+  //   }
+  // }
 
   .sub-section {
     font-size: 12px;
@@ -60,15 +60,29 @@
     margin-bottom: 4px;
   }
 
-  button {
-    margin-top: 32px;
-    width: 100%;
+  // .submit-btn {
+  //   margin-top: 24px;
+  //   width: 100%;
+  //   display: block;
+  //   height: $rounded-height;
+  //   background-color: $color-blue;
+  //   border-radius: $rounded-radius;
+  //   border: none;
+  //   padding: 0 16px;
+  //   color: white;
+  //   font-size: 1rem;
+  //   letter-spacing: 0.25px;
+  //   cursor: pointer;
 
-    .gen-spinner {
-      margin-top: 0;
-      margin-left: 8px;
-    }
-  }
+  //   &:focus {
+  //     box-shadow: 0 0 0 0.2rem $color-darkblue;
+  //     outline: none;
+  //   }
+
+  //   &:hover {
+  //     background-color: $color-darkblue;
+  //   }
+  // }
 }
 
 .circle-picker {
@@ -103,8 +117,6 @@
   button.chevron {
     width: 32px;
     height: 32px;
-    padding: 0;
-    margin: 0;
     background-color: transparent;
     color: $color-dark;
     border: solid 1px $color-blue;
@@ -190,14 +202,12 @@
   align-items: center;
   border-radius: $rounded-radius;
 
-
   input {
     display: none;
   }
 
   .custom-control-label {
     width: 50%;
-    margin: 0;
     border-radius: $rounded-radius;
     height: 100%;
     display: flex;
@@ -221,18 +231,13 @@
   }
 }
 
-#dark-light-radio {
-  display: flex;
-  flex-direction: column;
-  color: $color-dark;
-  margin-left: 4px;
-  margin-top: 8px;
-
-  label {
-    margin: 0;
-  }
-
-}
+// #dark-light-radio {
+//   display: flex;
+//   flex-direction: column;
+//   color: $color-dark;
+//   margin-left: 4px;
+//   margin-top: 8px;
+// }
 
 .sidebar-box {
   text-align: left;
@@ -269,33 +274,33 @@ button#add-image {
   margin-top: 8px;
 }
 
-#photo-upload {
-  margin-top: 16px;
-  margin-bottom: 0;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  text-align: center;
-  cursor: pointer;
-  border-radius: $rounded-radius;
-  // border: $border-lightgrey;
-  color: $color-dark;
-  background-color: $color-extralightgrey;
-  height: $rounded-height * 2;
-  width: 100%;
+// #photo-upload {
+//   margin-top: 16px;
+//   margin-bottom: 0;
+//   position: relative;
+//   display: flex;
+//   flex-direction: column;
+//   justify-content: center;
+//   text-align: center;
+//   cursor: pointer;
+//   border-radius: $rounded-radius;
+//   // border: $border-lightgrey;
+//   color: $color-dark;
+//   background-color: $color-extralightgrey;
+//   height: $rounded-height * 2;
+//   width: 100%;
 
-  // background-image: repeating-linear-gradient(0deg, #d3dade, #d3dade 10px, transparent 10px, transparent 24px, #d3dade 24px), repeating-linear-gradient(90deg, #d3dade, #d3dade 10px, transparent 10px, transparent 24px, #d3dade 24px), repeating-linear-gradient(180deg, #d3dade, #d3dade 10px, transparent 10px, transparent 24px, #d3dade 24px), repeating-linear-gradient(270deg, #d3dade, #d3dade 10px, transparent 10px, transparent 24px, #d3dade 24px);
-  // background-size: 3px 100%, 100% 3px, 3px 100% , 100% 3px;
-  // background-position: 0 0, 0 0, 100% 0, 0 100%;
-  // background-repeat: no-repeat;
+//   // background-image: repeating-linear-gradient(0deg, #d3dade, #d3dade 10px, transparent 10px, transparent 24px, #d3dade 24px), repeating-linear-gradient(90deg, #d3dade, #d3dade 10px, transparent 10px, transparent 24px, #d3dade 24px), repeating-linear-gradient(180deg, #d3dade, #d3dade 10px, transparent 10px, transparent 24px, #d3dade 24px), repeating-linear-gradient(270deg, #d3dade, #d3dade 10px, transparent 10px, transparent 24px, #d3dade 24px);
+//   // background-size: 3px 100%, 100% 3px, 3px 100% , 100% 3px;
+//   // background-position: 0 0, 0 0, 100% 0, 0 100%;
+//   // background-repeat: no-repeat;
 
-  input[type=file] {
-    clip-path: inset(50%);
-    height: 0;
-    width: 0;
-  }
-}
+//   input[type=file] {
+//     clip-path: inset(50%);
+//     height: 0;
+//     width: 0;
+//   }
+// }
 
 #image-url {
   margin-top: 16px;
@@ -391,9 +396,9 @@ button#add-image {
 }
 
 @media (min-width: $breakpoint-lg) {
-  #customization {
-    width: 33%;
-  }
+  // #customization {
+  //   width: 33%;
+  // }
 
   .circle-picker {
     justify-content: flex-start;

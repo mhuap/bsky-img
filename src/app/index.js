@@ -4,7 +4,6 @@ import axios from "axios";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { scroller } from "react-scroll";
-import Spinner from "react-bootstrap/Spinner";
 
 import Result from "../components/result";
 import Arrow from "../components/arrow.js";
@@ -104,11 +103,11 @@ function IndexPage() {
       </div>
     );
   } else if (loading) {
-    res = (
-      <Spinner animation="border" role="status">
-        <span className="visually-hidden">Loading...</span>
-      </Spinner>
-    );
+    // res = (
+    //   <Spinner animation="border" role="status">
+    //     <span className="visually-hidden">Loading...</span>
+    //   </Spinner>
+    // );
   } else if (serverError) {
     res = <span className="error-text">{serverError}</span>;
   } else {

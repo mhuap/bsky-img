@@ -24,6 +24,10 @@ function Tweet({
 }){
   const [avatarSrc, setAvatarSrc] = useState<string | undefined>();
   // TODO: deal with media
+  // .tweet-media
+  // <div className="mt-4 flex">
+  //   <img src="" alt="" className="w-full"/>
+  // </div>
   
   // TODO: is this still necessary?
   // ?? unencode html entities
@@ -34,7 +38,7 @@ function Tweet({
   // blueArr = array of text to highlight
   // if blueArr && boxBackground is on:
   // regexifyString
-  // <span className='blue' key={"blue " + index}>{content}</span>
+  // <span className='text-primary' key={"blue " + index}>{content}</span>
 
   let boxStyle = {
     borderRadius: boxRounded ? '0.75rem' : '0',
@@ -48,19 +52,18 @@ function Tweet({
   // TODO: deal with quoted post
 
   return (
-    <div id='post' style={boxStyle}>
-      <div>
-        {/* <img className='avatar' crossOrigin="anonymous" src={post.author.avatar} /> */}
-        <img className='avatar' crossOrigin="anonymous" src={post.author.avatarUrl} />
-        <div className='account-group'>
-          <div className='name'>
-            <span><b>{post.author.displayName}</b></span>
-          </div>
-          <span className='username'>{post.author.handle}</span>
+    <div className="min-w-3/4 m-4 bg-white p-6 relative border-none border-2" style={boxStyle}>
+      {/* id='post' */}
+      <div className="flex">
+        <img className='rounded-full w-10 h-10 mr-2' crossOrigin="anonymous" src={post.author.avatarUrl} />
+        <div className='text-sm'>
+          {/* account-group */}
+          <p className="font-bold">{post.author.displayName}</p>
+          <p className="text-secondary">@{post.author.handle}</p>
         </div>
       </div>
-      <div className='tweet-text'>{post.text}</div>
-      <div className='date'>{post.date.toString()}</div>
+      <div className='my-4 leading-[1.3] whitespace-pre-wrap'>{post.text}</div>
+      <div className='text-secondary text-right text-sm'>{post.date.toString()}</div>
     </div>
   )
 };

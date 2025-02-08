@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { cn } from "@/lib/utils";
 
 // const GRADIENTS = {
 //   'g1': ['#00FF8F', '#60EFFF'],
@@ -10,7 +10,7 @@ import React, { useState } from 'react';
 //   'g7': ['#fed1c7', '#fe8dc6'],
 //   'g8': ['#7f00ff', '#E75BFF']
 // }
-type Gradient = {
+interface Gradient {
   id: string,
   start: string,
   end: string
@@ -34,7 +34,7 @@ function GradientColor({
   gradient: string,
 }) {
 
-  return (<div className='gradient-tab'>
+  return (<div className='flex flex-wrap gap-2'>
       {GRADIENTS.map(g => {
         return <GradientSwatch id={g.id} key={g.id}
                 changed={handleGradientChange}
@@ -60,10 +60,18 @@ function GradientSwatch({
 
   return (
     <div>
-      <input id={id} type='radio' value={id} checked={isSelected} onChange={changed}/>
+      <input id={id} type='radio'
+        value={id}
+        checked={isSelected}
+        onChange={changed}
+        className="hidden"
+      />
       <label tabIndex={0}
         style={{background}}
-        className='gradient-swatch'
+        className={cn(
+          "block h-7 w-14 rounded-sm cursor-pointer",
+          {"shadow-[inset_rgba(0,0,0,0.4)_0px_0px_4px_2px]": isSelected}
+        )}
         htmlFor={id}
       />
     </div>

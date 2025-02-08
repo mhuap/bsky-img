@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect } from "react";
 // import axios from "axios";
 // import { scroller } from "react-scroll";
 import Image from 'next/image';
+import { cn } from "@/lib/utils";
 
 import Result from "@/components/Result";
 import Arrow from "@/components/arrow.js";
@@ -12,7 +13,6 @@ import axios from "axios";
 
 import diagram from "../../public/diagram.png";
 import PostDTO from "./api/bsky/PostDTO";
-import { Spinner } from "react-bootstrap";
 
 export default function Home() {
   const [loading, setLoading] = useState(false);
@@ -69,18 +69,17 @@ export default function Home() {
 
   let res;
   if (blank) {
-    res = <Image
-      id="diagram"
+    res = <div className="relative grow md:mx-auto md:w-wsm">
+      <Image
+      className="object-contain"
       src={diagram} alt="usage diagram"
       fill
       priority
-    />;
+    />
+    </div>;
+    // res = <p>image</p>
   } else if (loading) {
-    res = (
-      <Spinner animation="border" role="status">
-        <span className="visually-hidden">Loading...</span>
-      </Spinner>
-    );
+    res = <p className="text-center">Loading...</p> //Spinner
   } else if (serverError) {
     res = <span className="error-text">{serverError}</span>;
   } else if (post) {
@@ -91,12 +90,12 @@ export default function Home() {
 
   return (
     <>
-      <div id="container">
-        <div id="top-wrapper">
+      <div className="mx-auto w-full flex flex-col p-4 justify-between min-h-lvh sm:max-w-wsm md:max-w-wmd">
+        <div className="mt-16 mb-8">
           <Hero />
-          <form id="top-form" onSubmit={handleSubmit}>
-            <label className="section">post URL</label>
-            <div id="form-input-group" className={inputError ? "error" : ""}>
+          <form onSubmit={handleSubmit} className="w-full mx-auto md:w-wsm">
+            <label htmlFor="url-input" hidden>Post URL</label>
+            <div className="relative w-full bg-white z-[1]">
               <input
                 id="url-input"
                 type="text"
@@ -105,21 +104,30 @@ export default function Home() {
                 name="url"
                 placeholder="bsky.app/profile/something.bsky.social/post/fjdk4fjdksaf"
               // defaultValue={router.query.tweet ? router.query.tweet : ""}
+                className={cn(
+                  "border-solid border-2 border-input rounded-md w-full py-2 pl-3 pr-10 focus:border-primary focus:shadow-[0_0_0_0.2rem_rgb(0,95,204,0.15)] focus:outline-0",
+                  {"border-danger focus:border-danger focus:shadow-[0_0_0_0.2rem_rgba(220,53,69,0.25)] focus:outline-0": inputError}
+                )}
               />
-              <button className="input-overlay">
+              <button className="h-full absolute right-0 top-0 px-3 focus:shadow-[inset_0_0_0_0.2rem_rgb(0,95,204,0.25)]">
                 <Arrow />
               </button>
             </div>
-            {inputError && <p className="error-text">Not a valid bluesky URL</p>}
+            {inputError && <p className="text-danger text-sm">Not a valid bluesky URL</p>}
           </form>
         </div>
 
-        <section id="result-wrapper" className={loading ? "loading" : ""}>
+        <section className={cn(
+          "flex flex-col justify-between w-full md:mx-auto md:flex-row gap-3",
+          {"justify-center": loading}
+        )}>
+        {/* <section className={loading ? "loading" : ""}> */}
+        {/* id="result-wrapper" */}
           {res}
         </section>
-        <footer>
+        <footer className="mx-4 text-center text-secondary">
           Created by{" "}
-          <a href="https://mhuap.github.io">Matias Huapaya</a>.
+          <a href="https://mhuap.github.io" className=" hover:underline">Matias Huapaya</a>.
         </footer>
       </div>
     </>

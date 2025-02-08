@@ -1,0 +1,27 @@
+$color-grey: #657786; // secondary
+$color-dark: #14171a;
+$color-blue: #005fcc;
+$color-blue-transparent: rgb(0, 95, 204, 0.15);
+// $color-blue: #1da1f2;
+$color-darkblue: #004594;
+$color-lightgrey: #d3dade; // input
+$color-red: #dc3545; // danger
+$color-lightblue: #e8f5fe;
+// $color-extralightgrey: #f2f6f8; // muted
+$color-extralightgrey: #ecf1f4; // input-light
+
+$border-radius: 0.25rem;
+$border-lightgrey: solid 1px $color-lightgrey;
+
+$box-shadow-light: inset 0 0 0 0.2rem rgba(211, 212, 213, 0.5);
+
+$rounded-radius: 8px;
+$rounded-height: 46px;
+
+$width: 800px;
+$width-sm: 600px;
+
+$breakpoint-xl: 832px; // ??
+$breakpoint-lg: 768px; // md
+$breakpoint-sm: 532px; // sm
+$breakpoint-xs: 375px;
