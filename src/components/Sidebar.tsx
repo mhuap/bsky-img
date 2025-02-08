@@ -3,31 +3,57 @@ import Form from 'react-bootstrap/Form';
 import CustomSwitch from "./CustomSwitch";
 import Subsection from './Subsection';
 import { PropsWithChildren } from 'react';
+import { CardProperty } from '@/util/enums';
+import { useCardContext } from '@/contexts/CardContext';
 
 interface SidebarProps {
   onGenerate: (e: any) => void,
   // TODO: ^ e = HTML event prevent default
-  onSwitchRounded: () => void,
-  onSwitchBorder: () => void,
-  onSwitchBoxBackground: () => void,
-  onSwitchShadow: () => void,
   // onSwitchImageCrop: () => void,
   solid: boolean,
-  boxBackground: boolean,
   genLoading: boolean
 };
 
 function Sidebar({
   onGenerate,
-  onSwitchRounded,
-  onSwitchBorder,
-  onSwitchBoxBackground,
-  onSwitchShadow,
   solid,
-  boxBackground,
   genLoading,
   children
 } : PropsWithChildren<SidebarProps>) {
+  const { card, setCard } = useCardContext();
+  
+  const toggleCardSetting = (property: CardProperty) => {
+    switch (property) {
+      case CardProperty.Rounded:
+        setCard({
+          ...card,
+          rounded: !card.rounded
+        })
+        break;
+      case CardProperty.Border:
+        setCard({
+          ...card,
+          border: !card.border
+        })
+        break;
+      case CardProperty.WhiteBg:
+        setCard({
+          ...card,
+          whiteBg: !card.whiteBg
+        })
+        break;
+      case CardProperty.Shadow:
+        setCard({
+          ...card,
+          shadow: !card.shadow
+        })
+        break;
+      default:
+        throw Error("Unknown card setting toggled: ", property)
+        break;
+    }
+  }
+
   return (
     <div className="w-full md:w-1/3">
       <label className='section-label text-foreground'>Customization</label>
@@ -35,28 +61,28 @@ function Sidebar({
         <CustomSwitch
           label="Rounded corners"
           switchId='corner-switch'
-          onChange={onSwitchRounded}
+          onChange={() => toggleCardSetting(CardProperty.Rounded)}
           defaultChecked
         />
 
         <CustomSwitch
           label="Border"
           switchId='border-switch'
-          onChange={onSwitchBorder}
+          onChange={() => toggleCardSetting(CardProperty.Border)}
         />
 
         <CustomSwitch
           label="White background"
           switchId='background-switch'
-          onChange={onSwitchBoxBackground}
-          checked={solid ? boxBackground : true}
+          onChange={() => toggleCardSetting(CardProperty.WhiteBg)}
+          checked={solid ? card.whiteBg : true}
           disabled={!solid}
         />
 
         <CustomSwitch
           label="Shadow"
           switchId='shadow-switch'
-          onChange={onSwitchShadow}
+          onChange={() => toggleCardSetting(CardProperty.Shadow)}
           defaultChecked
         />
 

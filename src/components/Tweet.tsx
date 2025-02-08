@@ -5,23 +5,25 @@ import regexifyString from "regexify-string";
 import Poll from './poll.js';
 import axios from "axios";
 import PostDTO from "@/app/api/bsky/PostDTO.js";
+import { useCardContext } from "@/contexts/CardContext";
 
 function Tweet({
   post,
-  boxRounded,
-  boxBorder,
-  boxBackground,
-  boxShadow,
+  // boxRounded,
+  // boxBorder,
+  // boxBackground,
+  // boxShadow,
   // imageCrop,
   textColor
 } : {
   post: PostDTO,
-  boxRounded: boolean,
-  boxBorder: boolean,
-  boxBackground: boolean,
-  boxShadow: boolean,
+  // boxRounded: boolean,
+  // boxBorder: boolean,
+  // boxBackground: boolean,
+  // boxShadow: boolean,
   textColor: string,
 }){
+  const { card } = useCardContext();
   const [avatarSrc, setAvatarSrc] = useState<string | undefined>();
   // TODO: deal with media
   // .tweet-media
@@ -41,12 +43,12 @@ function Tweet({
   // <span className='text-primary' key={"blue " + index}>{content}</span>
 
   let boxStyle = {
-    borderRadius: boxRounded ? '0.75rem' : '0',
-    borderStyle: boxBorder ? 'solid': 'none',
-    background: boxBackground ? 'white' : 'none',
+    borderRadius: card.rounded ? '0.75rem' : '0',
+    borderStyle: card.border ? 'solid': 'none',
+    background: card.whiteBg ? 'white' : 'none',
     color: textColor,
     borderColor: textColor ?? '#14171a',
-    boxShadow: boxShadow ? 'rgba(0,0,0,0.1) 0px 8px 24px 0px' : 'none',
+    boxShadow: card.shadow ? 'rgba(0,0,0,0.1) 0px 8px 24px 0px' : 'none',
   }
 
   // TODO: deal with quoted post

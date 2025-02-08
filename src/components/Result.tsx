@@ -10,33 +10,43 @@ import PhotoUpload from './PhotoUpload';
 import { GRADIENTS } from './GradientColor';
 import PostDTO from "@/app/api/bsky/PostDTO";
 import { AspectRatio } from "./ui/aspect-ratio";
+import { BgMode, CardProperty, ImgFilter } from "@/util/enums";
+import { luminosity } from "@/util/luminosity";
+import { CardContext } from "@/contexts/CardContext";
 
 const serverErrorMsg = 'Bluesky server error';
 
-const blackFilter = `linear-gradient(
-          rgba(0, 0, 0, 0.7),
-          rgba(0, 0, 0, 0.7)
-        ), `
-const whiteFilter = `linear-gradient(
-          rgba(255, 255, 255, 0.85),
-          rgba(255, 255, 255, 0.85)
-        ), `
-
-function luminosity(color: string) {
-  const colorRegex = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(color)!;
-  const r = parseInt(colorRegex[1], 16)
-  const g = parseInt(colorRegex[2], 16)
-  const b = parseInt(colorRegex[3], 16)
-
-  return Math.round(r*0.299 + g*0.587 + b*0.114);
+export interface CardSettings {
+  rounded: boolean,
+  border: boolean,
+	whiteBg: boolean,
+	shadow: boolean
 }
 
-interface ResultProps {
-  post: PostDTO;
-};
+export interface BackgroundSettings {
+  mode: BgMode,
+  solidColor: string,
+  gradientCss: string,
+  gradientId: string,
+  bgImg: ArrayBuffer | string | undefined,
+  selectedFile: File | undefined,
+  imgFilter: ImgFilter,
+  bgImgUrl: string
+}
 
-function Result({ post }: ResultProps){
+function Result({
+  post
+} : {
+  post: PostDTO;
+}){
   // props.quoted existed
+
+  const [card, setCard] = useState<CardSettings>({
+    rounded: true,
+    border: false,
+    whiteBg: true,
+    shadow: true
+  })
 
   const [colorMode, setColorMode] = useState(0);
   // 0 = solid, 1 = gradient, 2 = image
@@ -49,12 +59,7 @@ function Result({ post }: ResultProps){
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [genLoading, setGenLoading] = useState(false);
   const [resultImg, setResultImg] = useState<string | null>(null);
-  const [imgFilter, setImgFilter] = useState('default');
-
-  const [boxRounded, setBoxRounded] = useState(true);
-  const [boxBorder, setBoxBorder] = useState(false);
-  const [boxBackground, setBoxBackground] = useState(true);
-  const [boxShadow, setBoxShadow] = useState(true);
+  const [imgFilter, setImgFilter] = useState<ImgFilter>(ImgFilter.Default);
   // TODO:
   // const [imageCrop, setImageCrop] = useState(false);
   // const [boxText, setBoxText] = useState(null);
@@ -93,7 +98,7 @@ function Result({ post }: ResultProps){
     // setSolidColorMode(true);
     setSelectedFile(null);
     setBgImg(null);
-    setImgFilter('default');
+    setImgFilter(ImgFilter.Default);
   }
 
   const onGenerate =(e: any) => {
@@ -171,7 +176,7 @@ function Result({ post }: ResultProps){
   let bgStyle = {background: bgColor};
   let textColor = '#000';
 
-  if (colorMode == 0 && !boxBackground){
+  if (colorMode == 0 && !card.whiteBg){
     // solid
     const l = luminosity(bgColor);
     if (l >= 135){
@@ -182,14 +187,15 @@ function Result({ post }: ResultProps){
   } else if (bgImg && colorMode == 2) {
     // image
     const defString = `center/cover url(${bgImg}) ${bgColor}`
-    if (imgFilter == 'default'){
+    // if (imgFilter == 'default'){
+    if (imgFilter == ImgFilter.Default){
       bgStyle.background = defString;
-    } else if (imgFilter == 'dark'){
-      bgStyle.background = blackFilter + defString;
+    } else if (imgFilter === ImgFilter.Dark){
+      bgStyle.background = ImgFilter.Dark + defString;
       textColor = '#fff';
     } else {
       // light
-      bgStyle.background = whiteFilter + defString;
+      bgStyle.background = ImgFilter.Light + defString;
       textColor = '#000';
     }
   } else if (colorMode == 1) {
@@ -212,9 +218,9 @@ function Result({ post }: ResultProps){
       <small className="text-secondary text-xs my-2"><a href={resultImg} download={`Bluesky post by ${post.author.handle}`}>download here</a></small>
     </div>
   } else {
-    content = <>
+    content = <CardContext.Provider value={{card, setCard}}>
       <div className="w-full md:w-2/3">
-        <label className='section-label' >Preview</label>
+        <label className='section-label'>Preview</label>
         <div id="preview"className='mb-3 w-full'>
           <AspectRatio ratio={1}
             className="flex items-center shadow-[inset_rgba(0,0,0,.11)_0_0_0_1px] bg-center bg-cover"
@@ -222,39 +228,17 @@ function Result({ post }: ResultProps){
           >
             <Tweet
               post={post}
-              boxRounded={boxRounded}
-              boxBorder={boxBorder}
-              boxBackground={boxBackground}
-              boxShadow={boxShadow}
-              // imageCrop={imageCrop}
               textColor={textColor}
             />
           </AspectRatio>
-          {/* <div className='flex justify-center items-center' style={bgStyle}>
-            <div className='pt-[100%]'></div>
-            <Tweet
-                post={post}
-                boxRounded={boxRounded}
-                boxBorder={boxBorder}
-                boxBackground={boxBackground}
-                boxShadow={boxShadow}
-                // imageCrop={imageCrop}
-                textColor={textColor}
-              />
-          </div> */}
         </div>
       </div>
 
       <Sidebar
         onGenerate={onGenerate}
-        onSwitchRounded={() => setBoxRounded(!boxRounded)}
-        onSwitchBorder={() => setBoxBorder(!boxBorder)}
-        onSwitchBoxBackground={() => setBoxBackground(!boxBackground)}
-        onSwitchShadow={() => setBoxShadow(!boxShadow)}
         // imageCropDisabled={mainTweet.tweet.media && mainTweet.tweet.media.length == 1}
         // onSwitchImageCrop={() => setImageCrop(!imageCrop)}
         solid={colorMode != 1}
-        boxBackground={boxBackground}
         genLoading={genLoading}
       >
         <BackgroundPicker
@@ -267,8 +251,6 @@ function Result({ post }: ResultProps){
           // fileName={null}
           // colorMode={colorMode}
           setColorMode={setColorMode}
-          setBoxBackground={setBoxBackground}
-          setBoxShadow={setBoxShadow}
           // onClickGradient={onClickGradient}
           handleGradientChange={handleGradientChange}
           gradient={gradientId}
@@ -283,18 +265,8 @@ function Result({ post }: ResultProps){
           // unsplashPhotoClick={unsplashPhotoClick}
         />
 
-        {/* <PhotoUpload
-          show={modalShow}
-          onHide={() => setModalShow(false)}
-          // onFileChange={onFileChange}
-          useImageURL={useImageURL}
-          imageUrl={imageUrl}
-          setImageUrl={setImageUrl}
-          // unsplashPhotoClick={unsplashPhotoClick}
-        /> */}
-
       </Sidebar>
-    </>
+    </CardContext.Provider>
   }
 
   return <>{content}</>;

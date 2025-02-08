@@ -8,6 +8,8 @@ import SolidColor from "./SolidColor";
 import GradientColor from "./GradientColor";
 import PhotoUpload from './PhotoUpload';
 import { ColorChangeHandler } from 'react-color';
+import { ImgFilter } from '@/util/enums';
+import { useCardContext } from '@/contexts/CardContext';
 
 function BackgroundPicker({
   onClickTrash,
@@ -17,8 +19,6 @@ function BackgroundPicker({
   setColorMode,
   handleGradientChange,
   gradient,
-  setBoxBackground,
-  setBoxShadow,
   setImgFilter,
   imgFilter,
   onChange,
@@ -41,9 +41,7 @@ function BackgroundPicker({
   handleGradientChange: (e: any) => void,
   // TODO: ^ e = HTML event prevent default
   gradient: string,
-  setBoxBackground: (b: boolean) => void,
-  setBoxShadow: (b: boolean) => void,
-  setImgFilter: (f: string) => void,
+  setImgFilter: (f: ImgFilter) => void,
   imgFilter: string,
   onChange: ColorChangeHandler,
   setBgColor: (color: string) => void,
@@ -57,6 +55,9 @@ function BackgroundPicker({
   setImageUrl: (i: string) => void,
   // unsplashPhotoClick
 }) {
+
+  const { card, setCard } = useCardContext();
+  
   let imageButton;
 
   if (fileName) {
@@ -69,13 +70,12 @@ function BackgroundPicker({
     </div>
     <div className="flex flex-col ml-1">
     {/* id='dark-light-radio' */}
-      <label><input type='radio' name='dark-light' onClick={() => setImgFilter('default')} defaultChecked={imgFilter === 'default'}/>Default</label>
-      <label><input type='radio' name='dark-light' onClick={() => {setImgFilter('dark'); setBoxBackground(false); setBoxShadow(false);}} defaultChecked={imgFilter === 'dark'}/>Dark</label>
-      <label><input type='radio' name='dark-light' onClick={() => {setImgFilter('light'); setBoxBackground(false); setBoxShadow(false);}} defaultChecked={imgFilter === 'light'}/>Light</label>
+      <label><input type='radio' name='dark-light' onClick={() => setImgFilter(ImgFilter.Default)} defaultChecked={imgFilter === ImgFilter.Default}/>Default</label>
+      <label><input type='radio' name='dark-light' onClick={() => {setImgFilter(ImgFilter.Dark); setCard({...card, whiteBg: false}); setCard({...card, shadow: false});}} defaultChecked={imgFilter === ImgFilter.Dark}/>Dark</label>
+      <label><input type='radio' name='dark-light' onClick={() => {setImgFilter(ImgFilter.Light); setCard({...card, whiteBg: false}); setCard({...card, shadow: false});}} defaultChecked={imgFilter === ImgFilter.Light}/>Light</label>
     </div>
     </>;
   } else {
-    // onClick={onClickAddImage}
     imageButton = <>
       <PhotoUpload
         show={show}
@@ -91,12 +91,11 @@ function BackgroundPicker({
   }
 
   return (
-    <>
     <Tabs defaultValue="solid">
       <TabsList>
-        <TabsTrigger value="solid" onClick={() => {setBoxBackground(true); setColorMode(0);}}>Solid</TabsTrigger>
-        <TabsTrigger value="gradient" onClick={() => {setBoxBackground(true); setColorMode(1);}}>Gradient</TabsTrigger>
-        <TabsTrigger value="image" onClick={() => {setBoxBackground(true); setColorMode(2); setImgFilter('default');}}>Image</TabsTrigger>
+        <TabsTrigger value="solid" onClick={() => {setCard({...card, whiteBg: true}); setColorMode(0);}}>Solid</TabsTrigger>
+        <TabsTrigger value="gradient" onClick={() => {setCard({...card, whiteBg: true}); setColorMode(1);}}>Gradient</TabsTrigger>
+        <TabsTrigger value="image" onClick={() => {setCard({...card, whiteBg: true}); setColorMode(2); setImgFilter(ImgFilter.Default);}}>Image</TabsTrigger>
       </TabsList>
       <TabsContent value="solid">
         <SolidColor hex={hex} onChange={onChange} onChangeHex={setBgColor}/>
@@ -106,35 +105,6 @@ function BackgroundPicker({
       </TabsContent>
       <TabsContent value="image">{imageButton}</TabsContent>
     </Tabs>
-
-    {/* <div className='segmented'>
-      <input type='radio' name='color-mode' id='solid' defaultChecked={colorMode == 0}/><label
-        tabIndex='0'
-        className='custom-control-label'
-        htmlFor='solid'
-        onClick={() => {setBoxBackground(true); setColorMode(0);}}
-        onKeyDown={(e) => checkEnter(e, 0)}
-        >Solid</label>
-      <input type='radio' name='color-mode' id='gradient' defaultChecked={colorMode == 1}/><label
-        tabIndex='0'
-        className='custom-control-label'
-        htmlFor='gradient'
-        onClick={() => {setBoxBackground(true); setColorMode(1);}}
-        onKeyDown={(e) => checkEnter(e, 1)}
-        >Gradient</label>
-      <input type='radio' name='color-mode' id='radio-image' defaultChecked={colorMode == 2}/><label
-        tabIndex='0'
-        className='custom-control-label'
-        htmlFor='radio-image'
-        onClick={() => {setBoxBackground(true); setColorMode(2); setImgFilter('default');}}
-        onKeyDown={(e) => checkEnter(e, 2)}
-        >Image</label>
-    </div> */}
-
-    {/* {content} */}
-    {/* {imageButton} */}
-
-    </>
   )
 }
 
