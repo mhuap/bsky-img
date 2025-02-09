@@ -14,6 +14,8 @@ import axios from "axios";
 import diagram from "../../public/diagram.png";
 import PostDTO from "./api/bsky/PostDTO";
 
+const serverErrorMsg = 'Bluesky server error';
+
 export default function Home() {
   const [loading, setLoading] = useState(false);
   const [blank, setBlank] = useState(true);
@@ -86,6 +88,8 @@ export default function Home() {
     // res = <Result blank={blank} mainTweet={mainTweet} quoted={quoted} />;
     res = <Result post={post} />
     // res = <div>{JSON.stringify(post)}</div>
+  } else if (!post){
+    res = <p>{serverErrorMsg}</p>
   }
 
   return (

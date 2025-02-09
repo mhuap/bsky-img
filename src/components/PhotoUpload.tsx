@@ -9,33 +9,70 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { BackgroundSettings } from './Result';
+import { BgMode } from '@/util/enums';
+import { useBackgroundContext } from '@/contexts/BackgroundContext';
 
-// import Modal from 'react-bootstrap/Modal';
-// import Tabs from 'react-bootstrap/Tabs';
-// import Tab from 'react-bootstrap/Tab';
 // import UnsplashTab from './unsplashTab.js';
 
 function PhotoUpload({
-  onFileChange,
-  show,
-  onHide,
-  useImageURL,
-  imageUrl,
-  setImageUrl,
-  onClickAddImage,
   // unsplashPhotoClick
+  // DELETE
+  // onFileChange,
+  // imageUrl,
+  // setImageUrl,
+  // useImageURL,
+  // onClickAddImage,
 } : {
-  onFileChange: (e: ChangeEvent<HTMLInputElement>) => void,
-  show: boolean,
-  onHide: () => void,
-  useImageURL: (e: any) => void,
-  imageUrl: string,
-  setImageUrl: (i: string) => void,
-  onClickAddImage: () => void
   // unsplashPhotoClick
+  // DELETE
+  // onFileChange: (e: ChangeEvent<HTMLInputElement>) => void,
+  // imageUrl: string | null,
+  // setImageUrl: (i: string) => void,
+  // useImageURL: (e: any) => void,
+  // onClickAddImage: () => void
 }) {
+  const { background, setBackground } = useBackgroundContext();
+  const [imageUrl, setImageUrl] = useState<string>("");
+  const [showModal, setShowModal] = React.useState(false);
+  
+  const confirmImageURL = (e: any) => {
+    e.preventDefault();
+    // setSelectedFile({name: 'Image from URL'});
+    setBackground({
+      ...background,
+      bgImg: imageUrl,
+    })
+    setShowModal(false);
+  }
+
+  const onClickAddImage = () => {
+    setShowModal(true);
+    setBackground({
+      ...background,
+      mode: BgMode.Image
+    })
+  }
+
+  const onFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    // const file = e.target?.files[0];
+    const files = e.target?.files;
+    if (files){
+      const file = files[0];
+      setBackground({
+        ...background,
+        selectedFile: file
+      });
+      console.log("file read:", file.name);
+      let reader = new FileReader();
+      reader.onload = () => setBackground({...background, bgImg: reader.result});
+      reader.readAsDataURL(file);
+      setShowModal(false);
+    }
+  }
+
   return (
-    <Dialog open={show}>
+    <Dialog open={showModal}>
       <DialogTrigger asChild onClick={onClickAddImage}>
         <button className='p-2 rounded-md bg-input-light whitespace-nowrap w-full text-foreground hover:bg-input'>
           Add background image
@@ -60,7 +97,7 @@ function PhotoUpload({
             </TabsContent>
             <TabsContent value="url">
               {/* id='image-url' */}
-              <form action={void(0)} onSubmit={useImageURL} >
+              <form action={void(0)} onSubmit={confirmImageURL} >
                 <label htmlFor="image-url" hidden>Image URL</label>
                 <input id="image-url" type="text" placeholder='https://' value={imageUrl}
                   onChange={(e) => setImageUrl(e.target.value)}

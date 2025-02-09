@@ -1,20 +1,17 @@
 import React, { useState, useRef, useEffect, ChangeEvent }from "react";
-import axios from 'axios';
 // import { scroller } from 'react-scroll';
 import * as htmlToImage from 'html-to-image';
 
+import PostDTO from "@/app/api/bsky/PostDTO";
+import { AspectRatio } from "./ui/aspect-ratio";
+import Providers from "./Providers";
+import { BgMode, ImgFilter } from "@/util/enums";
+import { luminosity } from "@/util/luminosity";
 import Tweet from './Tweet';
 import BackgroundPicker from './BackgroundPicker';
 import Sidebar from './Sidebar';
-import PhotoUpload from './PhotoUpload';
-import { GRADIENTS } from './GradientColor';
-import PostDTO from "@/app/api/bsky/PostDTO";
-import { AspectRatio } from "./ui/aspect-ratio";
-import { BgMode, CardProperty, ImgFilter } from "@/util/enums";
-import { luminosity } from "@/util/luminosity";
-import { CardContext } from "@/contexts/CardContext";
-
-const serverErrorMsg = 'Bluesky server error';
+import { GRADIENTS } from "./GradientSwatch";
+import { bgCSS } from "@/util/gradientCSS";
 
 export interface CardSettings {
   rounded: boolean,
@@ -26,12 +23,11 @@ export interface CardSettings {
 export interface BackgroundSettings {
   mode: BgMode,
   solidColor: string,
-  gradientCss: string,
+  // gradientCSS: string,
   gradientId: string,
-  bgImg: ArrayBuffer | string | undefined,
-  selectedFile: File | undefined,
+  bgImg: ArrayBuffer | string | null,
+  selectedFile: File | null,
   imgFilter: ImgFilter,
-  bgImgUrl: string
 }
 
 function Result({
@@ -48,58 +44,18 @@ function Result({
     shadow: true
   })
 
-  const [colorMode, setColorMode] = useState(0);
-  // 0 = solid, 1 = gradient, 2 = image
-
-  const [bgGradient, setBgGradient] = useState(`linear-gradient(to bottom right, #00FF8F, #60EFFF)`);
-  const [bgColor, setBgColor] = useState('#E1E8ED');
-  const [gradientId, setGradientId] = useState('g1');
-
-  const [bgImg, setBgImg] = useState<ArrayBuffer | string | null>(null);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [background, setBackground] = useState<BackgroundSettings>({
+    mode: BgMode.Solid,
+    solidColor: "#E1E8ED",
+    gradientId: "g1",
+    bgImg: null,
+    selectedFile: null,
+    imgFilter: ImgFilter.Default,
+  })
+  
+  // can stay for now:
   const [genLoading, setGenLoading] = useState(false);
   const [resultImg, setResultImg] = useState<string | null>(null);
-  const [imgFilter, setImgFilter] = useState<ImgFilter>(ImgFilter.Default);
-  // TODO:
-  // const [imageCrop, setImageCrop] = useState(false);
-  // const [boxText, setBoxText] = useState(null);
-
-  const [modalShow, setModalShow] = React.useState(false);
-
-  // const imageUrlRef = useRef(); // PhotoUpload: imgRef
-  const [imageUrl, setImageUrl] = useState<string>("");
-
-  const handleColorChange = (color: any, event: any) => setBgColor(color.hex);
-
-  useEffect(() => {
-    console.log("changed color:", bgColor);
-  }, [bgColor])
-
-  const onFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    // const file = e.target?.files[0];
-    const files = e.target?.files;
-    if (files){
-      const file = files[0];
-      setSelectedFile(file);
-      console.log("file read:", file.name);
-      let reader = new FileReader();
-      reader.onload = () => {setBgImg(reader.result)};
-      reader.readAsDataURL(file);
-      setModalShow(false);
-    }
-  }
-
-  const onClickAddImage = () => {
-    setModalShow(true);
-    setColorMode(2);
-  }
-
-  const onClickTrash = () => {
-    // setSolidColorMode(true);
-    setSelectedFile(null);
-    setBgImg(null);
-    setImgFilter(ImgFilter.Default);
-  }
 
   const onGenerate =(e: any) => {
     e.preventDefault();
@@ -131,15 +87,6 @@ function Result({
     });
   }
 
-  const useImageURL = (e: any) => {
-    e.preventDefault();
-
-    const src = imageUrl;
-    // setSelectedFile({name: 'Image from URL'});
-    setBgImg(src);
-    setModalShow(false);
-  }
-
   // const unsplashPhotoClick = (e, downloadLocation) => {
   //   e.preventDefault()
 
@@ -158,39 +105,27 @@ function Result({
   //   setBgImg("");
   // }
 
-  const handleGradientChange = (e: any) => {
-    const gradient: string = e.target.value;
-
-    setGradientId(gradient);
-    const colorA = GRADIENTS.find(g => g.id === gradient)?.start;
-    const colorB = GRADIENTS.find(g => g.id === gradient)?.end;
-    setBgGradient(`linear-gradient(to bottom right, ${colorA}, ${colorB})`);
-  }
-
   // console.log(tweet);
-  if (!post){
-    return <p>{serverErrorMsg}</p>
-  }
 
   let bgSection;
-  let bgStyle = {background: bgColor};
+  let bgStyle = {background: background.solidColor};
   let textColor = '#000';
 
-  if (colorMode == 0 && !card.whiteBg){
+  if (background.mode === BgMode.Solid && !card.whiteBg){
     // solid
-    const l = luminosity(bgColor);
+    const l = luminosity(background.solidColor);
     if (l >= 135){
       textColor = '#000';
     } else {
       textColor = '#fff';
     }
-  } else if (bgImg && colorMode == 2) {
+  } else if (background.bgImg && background.mode === BgMode.Image) {
     // image
-    const defString = `center/cover url(${bgImg}) ${bgColor}`
+    const defString = `center/cover url(${background.bgImg}) ${background.solidColor}`
     // if (imgFilter == 'default'){
-    if (imgFilter == ImgFilter.Default){
+    if (background.imgFilter == ImgFilter.Default){
       bgStyle.background = defString;
-    } else if (imgFilter === ImgFilter.Dark){
+    } else if (background.imgFilter === ImgFilter.Dark){
       bgStyle.background = ImgFilter.Dark + defString;
       textColor = '#fff';
     } else {
@@ -198,11 +133,11 @@ function Result({
       bgStyle.background = ImgFilter.Light + defString;
       textColor = '#000';
     }
-  } else if (colorMode == 1) {
+  } else if (background.mode === BgMode.Gradient) {
     // gradient
-    bgStyle.background = bgGradient;
+    const gradient = GRADIENTS[background.gradientId as keyof typeof GRADIENTS];
+    bgStyle.background = bgCSS(gradient);
   }
-
 
   let content;
 
@@ -218,7 +153,7 @@ function Result({
       <small className="text-secondary text-xs my-2"><a href={resultImg} download={`Bluesky post by ${post.author.handle}`}>download here</a></small>
     </div>
   } else {
-    content = <CardContext.Provider value={{card, setCard}}>
+    content = <Providers card={{card, setCard}} background={{background, setBackground}}>
       <div className="w-full md:w-2/3">
         <label className='section-label'>Preview</label>
         <div id="preview"className='mb-3 w-full'>
@@ -236,37 +171,18 @@ function Result({
 
       <Sidebar
         onGenerate={onGenerate}
+        solid={background.mode != BgMode.Gradient}
+        genLoading={genLoading}
         // imageCropDisabled={mainTweet.tweet.media && mainTweet.tweet.media.length == 1}
         // onSwitchImageCrop={() => setImageCrop(!imageCrop)}
-        solid={colorMode != 1}
-        genLoading={genLoading}
       >
         <BackgroundPicker
-          onChange={handleColorChange}
-          setBgColor={setBgColor}
-          hex={bgColor}
-          onClickAddImage={onClickAddImage}
-          onClickTrash={onClickTrash}
-          fileName={selectedFile?.name}
-          // fileName={null}
-          // colorMode={colorMode}
-          setColorMode={setColorMode}
           // onClickGradient={onClickGradient}
-          handleGradientChange={handleGradientChange}
-          gradient={gradientId}
-          imgFilter={imgFilter}
-          setImgFilter={setImgFilter}
-          show={modalShow}
-          onHide={() => setModalShow(false)}
-          onFileChange={onFileChange}
-          useImageURL={useImageURL}
-          imageUrl={imageUrl}
-          setImageUrl={setImageUrl}
           // unsplashPhotoClick={unsplashPhotoClick}
         />
 
       </Sidebar>
-    </CardContext.Provider>
+    </Providers>
   }
 
   return <>{content}</>;

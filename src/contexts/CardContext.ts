@@ -1,7 +1,7 @@
 import { CardSettings } from "@/components/Result";
 import { createContext, useContext } from "react";
 
-interface CardContextType {
+export interface CardContextType {
   card: CardSettings,
   setCard: (c: CardSettings) => void
 }

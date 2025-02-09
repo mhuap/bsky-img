@@ -1,4 +1,3 @@
-import Form from 'react-bootstrap/Form';
 // import Spinner from 'react-bootstrap/Spinner';
 import CustomSwitch from "./CustomSwitch";
 import Subsection from './Subsection';
@@ -49,8 +48,7 @@ function Sidebar({
         })
         break;
       default:
-        throw Error("Unknown card setting toggled: ", property)
-        break;
+        throw Error("Unknown card setting toggled: ", property);
     }
   }
 
