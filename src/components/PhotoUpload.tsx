@@ -9,7 +9,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { BackgroundSettings } from './Result';
 import { BgMode } from '@/util/enums';
 import { useBackgroundContext } from '@/contexts/BackgroundContext';
 
@@ -17,20 +16,8 @@ import { useBackgroundContext } from '@/contexts/BackgroundContext';
 
 function PhotoUpload({
   // unsplashPhotoClick
-  // DELETE
-  // onFileChange,
-  // imageUrl,
-  // setImageUrl,
-  // useImageURL,
-  // onClickAddImage,
 } : {
   // unsplashPhotoClick
-  // DELETE
-  // onFileChange: (e: ChangeEvent<HTMLInputElement>) => void,
-  // imageUrl: string | null,
-  // setImageUrl: (i: string) => void,
-  // useImageURL: (e: any) => void,
-  // onClickAddImage: () => void
 }) {
   const { background, setBackground } = useBackgroundContext();
   const [imageUrl, setImageUrl] = useState<string>("");
@@ -106,45 +93,16 @@ function PhotoUpload({
                 <button className="p-2 rounded-md bg-input-light hover:bg-input w-full">Add</button>
               </form>
             </TabsContent>
-            <TabsContent value="unsplash">fdafdas</TabsContent>
+            <TabsContent value="unsplash">
+              Unsplash coming soon
+              {/* <UnsplashTab
+    //           handlePhotoClick={unsplashPhotoClick}
+    //         /> */}
+            </TabsContent>
           </Tabs>
         </DialogHeader>
       </DialogContent>
     </Dialog>
-
-    // <Modal
-    //   {...props}
-    //   size="lg"
-    //   aria-labelledby="contained-modal-title-vcenter"
-    //   centered
-    // >
-    //   <Modal.Header closeButton>
-    //     Select background image
-    //   </Modal.Header>
-    //   <Modal.Body>
-    //     <Tabs fill defaultActiveKey="upload">
-    //       <Tab eventKey="upload" title="Upload">
-    //         <label id='photo-upload'>
-    //           <input type="file" onChange={onFileChange} accept="image/jpeg, image/png"/>
-    //             Browse
-    //         </label>
-    //       </Tab>
-    //       <Tab eventKey="url" title="URL">
-    //         <div id='image-url'>
-    //           <form action={void(0)} onSubmit={useImageURL} >
-    //             <input type="text" placeholder='https://' value={imageUrl} onChange={(e) => setImageURL(e.target.value)}/>
-    //             <button>Add</button>
-    //           </form>
-    //         </div>
-    //       </Tab>
-    //       <Tab eventKey="unsplash" title="Unsplash">
-    //         {/* <UnsplashTab
-    //           handlePhotoClick={unsplashPhotoClick}
-    //         /> */}
-    //       </Tab>
-    //     </Tabs>
-    //   </Modal.Body>
-    // </Modal>
   );
 }
 

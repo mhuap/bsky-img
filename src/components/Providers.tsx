@@ -11,6 +11,8 @@ interface ProvidersProps {
 export default function Providers({
   card, background, children
 } : PropsWithChildren<ProvidersProps>) {
+  
+
   return (
     <CardContext.Provider value={card}>
       <BackgroundContext.Provider value={background}>

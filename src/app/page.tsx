@@ -1,18 +1,19 @@
 'use client';
-import React, { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 // import axios from "axios";
 // import { scroller } from "react-scroll";
 import Image from 'next/image';
-import { cn } from "@/lib/utils";
-
-import Result from "@/components/Result";
-import Arrow from "@/components/arrow.js";
-import Hero from "@/components/Hero";
-import { validate } from "@/util/handlingURL";
 import axios from "axios";
 
-import diagram from "../../public/diagram.png";
+import { cn } from "@/lib/utils";
 import PostDTO from "./api/bsky/PostDTO";
+import { validate } from "@/util/handlingURL";
+
+import ContentContainer from "@/components/ContentContainer";
+import Hero from "@/components/Hero";
+import Arrow from "@/components/arrow.js";
+
+import diagram from "../../public/diagram.png";
 
 const serverErrorMsg = 'Bluesky server error';
 
@@ -44,6 +45,7 @@ export default function Home() {
       setBlank(false);
       setInputError(false);
       setLoading(true);
+      console.log("FETCHING BLUESKY POST")
       const postDTO: PostDTO = await axios.get("/api/bsky", {
           params: groups
         })
@@ -86,7 +88,7 @@ export default function Home() {
     res = <span className="error-text">{serverError}</span>;
   } else if (post) {
     // res = <Result blank={blank} mainTweet={mainTweet} quoted={quoted} />;
-    res = <Result post={post} />
+    res = <ContentContainer post={post} />
     // res = <div>{JSON.stringify(post)}</div>
   } else if (!post){
     res = <p>{serverErrorMsg}</p>
@@ -129,7 +131,7 @@ export default function Home() {
         {/* id="result-wrapper" */}
           {res}
         </section>
-        <footer className="mx-4 text-center text-secondary">
+        <footer className="mx-4 text-center text-secondary mt-8 md:mt-4">
           Created by{" "}
           <a href="https://mhuap.github.io" className=" hover:underline">Matias Huapaya</a>.
         </footer>

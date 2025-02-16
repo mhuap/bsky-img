@@ -1,5 +1,3 @@
-import React from "react";
-
 const Arrow = () => {
   return (
     <svg className="h-6/10 fill-primary" xmlns='http://www.w3.org/2000/svg' viewBox='0 0 45 70'>

@@ -1,17 +1,15 @@
-import { ChangeEvent, useState } from 'react';
-
-// import { BiImageAdd, BiTrash, BiChevronDown, BiChevronUp } from "react-icons/bi";
 import { Trash2 } from 'lucide-react';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import SolidColor from "./SolidColor";
-import PhotoUpload from './PhotoUpload';
 // import { ColorChangeHandler } from 'react-color';
 import { BgMode, ImgFilter } from '@/util/enums';
+import { swatchCSS } from '@/util/gradientCSS';
 import { useCardContext } from '@/contexts/CardContext';
 import { useBackgroundContext } from '@/contexts/BackgroundContext';
+
 import GradientSwatch, { GRADIENTS } from './GradientSwatch';
-import { swatchCSS } from '@/util/gradientCSS';
+import SolidColor from "./SolidColor";
+import PhotoUpload from './PhotoUpload';
 
 function BackgroundPicker() {
   const { card, setCard } = useCardContext();

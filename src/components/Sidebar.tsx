@@ -2,65 +2,42 @@
 import CustomSwitch from "./CustomSwitch";
 import Subsection from './Subsection';
 import { PropsWithChildren } from 'react';
-import { CardProperty } from '@/util/enums';
+import { BgMode, CardProperty } from '@/util/enums';
 import { useCardContext } from '@/contexts/CardContext';
+import { useBackgroundContext } from "@/contexts/BackgroundContext";
 
 interface SidebarProps {
   onGenerate: (e: any) => void,
   // TODO: ^ e = HTML event prevent default
   // onSwitchImageCrop: () => void,
-  solid: boolean,
   genLoading: boolean
 };
 
 function Sidebar({
   onGenerate,
-  solid,
   genLoading,
   children
 } : PropsWithChildren<SidebarProps>) {
   const { card, setCard } = useCardContext();
+  const { background } = useBackgroundContext();
+
+  const solid = background.mode != BgMode.Gradient;
   
-  const toggleCardSetting = (property: CardProperty) => {
-    switch (property) {
-      case CardProperty.Rounded:
-        setCard({
-          ...card,
-          rounded: !card.rounded
-        })
-        break;
-      case CardProperty.Border:
-        setCard({
-          ...card,
-          border: !card.border
-        })
-        break;
-      case CardProperty.WhiteBg:
-        setCard({
-          ...card,
-          whiteBg: !card.whiteBg
-        })
-        break;
-      case CardProperty.Shadow:
-        setCard({
-          ...card,
-          shadow: !card.shadow
-        })
-        break;
-      default:
-        throw Error("Unknown card setting toggled: ", property);
-    }
-  }
+  const toggleCardSetting = (property: CardProperty) => setCard({
+    ...card,
+    [property]: !card[property]
+  });
 
   return (
     <div className="w-full md:w-1/3">
-      <label className='section-label text-foreground'>Customization</label>
+      <label className='section-label'>Customization</label>
       <Subsection title='Tweet card'>
         <CustomSwitch
           label="Rounded corners"
           switchId='corner-switch'
           onChange={() => toggleCardSetting(CardProperty.Rounded)}
           defaultChecked
+          disabled={!card.whiteBg && !card.border && !card.shadow}
         />
 
         <CustomSwitch
@@ -97,8 +74,7 @@ function Sidebar({
       </Subsection>
       
       <button className="w-full h-11 bg-primary rounded-md px-4 text-white tracking-wide hover:bg-primary-dark" onClick={onGenerate}>
-        Generate
-        {genLoading && <p>Loading...</p>}
+        {genLoading ? <p>Loading...</p> : "Generate"}
       </button>
 
     </div>

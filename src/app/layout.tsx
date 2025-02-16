@@ -17,7 +17,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="text-foreground">
+    <html lang="en" className="text-foreground text-[14px] sm:text-[16px]">
       <body>
         {children}
       </body>

@@ -20,8 +20,8 @@ export enum ImgFilter {
 }
 
 export enum CardProperty {
-  Rounded,
-  Border,
-  WhiteBg,
-  Shadow
+  Rounded = "rounded",
+  Border = "border",
+  WhiteBg = "whiteBg",
+  Shadow = "shadow"
 }

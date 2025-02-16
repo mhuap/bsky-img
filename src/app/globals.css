@@ -18,6 +18,12 @@
 
   --spacing-wsm: 36rem; /* 600px */
   --spacing-wmd: 50rem; /* 800px */
+
+  --breakpoint-sm: 530px;
+  --breakpoint-xs: 425px;  
+  --breakpoint-xxs: 375px;
+
+  --text-tiny: 0.675rem;
 }
 
 @layer base {
@@ -47,6 +53,11 @@
     font-weight: bold;
     letter-spacing: 0.25px;
     text-transform: uppercase;
+    color: var(--color-foreground);
+  }
+
+  .card-shadow {
+    box-shadow: rgba(0,0,0,0.1) 0px 8px 24px 0px;
   }
 
   /* #hex-color-picker .react-colorful{
