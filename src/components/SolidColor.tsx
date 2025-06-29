@@ -4,18 +4,14 @@ import { CustomPicker, CirclePicker, ColorChangeHandler } from 'react-color';
 import { HexColorPicker, HexColorInput } from "react-colorful";
 import { Palette } from 'lucide-react';
 import { cn } from '@/lib/utils';
-// import { IoColorPaletteSharp } from "react-icons/io5";
+import { useBackgroundContext } from '@/contexts/BackgroundContext';
 
-function SolidColor({
-  onChange,
-  onChangeHex,
-  hex
-} : {
-  onChange: ColorChangeHandler,
-  onChangeHex: (color: string) => void,
-  hex: string
-}) {
+function SolidColor() {
+  const { background, setBackground } = useBackgroundContext();
   const [show, setShow] = useState(false);
+  
+  const onChangePicker: ColorChangeHandler = (color: any, event: any) => setBackground({...background, solidColor: color.hex});
+  const onChangeHex = (solidColor: string) => setBackground({...background, solidColor});
 
   return (
     <>
@@ -23,21 +19,18 @@ function SolidColor({
         width='100%'
         circleSpacing={6}
         colors={['#EB144C', '#FF7C00', '#FCD600', '#50D175', '#71C7FE', '#7871FE', '#FEA5DD']}
-        onChange={onChange}
+        onChange={onChangePicker}
       />
 
       <div className="mt-2 w-full rounded-md bg-muted">
-        {/* id="custom-color" */}
         <div className="flex justify-between items-center p-2">
-          {/* id='top-button' */}
           <div className="relative text-secondary w-23 h-full">
-            {/* id='inputgroup' */}
+            <i className="absolute left-2 top-1">#</i>
             <HexColorInput
               className="p-1 pl-6 border-none w-full rounded-sm bg-white focus:outline-none"
-              color={hex}
+              color={background.solidColor}
               onChange={onChangeHex}
             />
-            <i className="absolute left-2 top-1">#</i>
           </div>
           <button className="rounded-md w-8 h-8" onClick={() => setShow(!show)}>
             <Palette className="mx-auto text-primary"/>
@@ -48,12 +41,10 @@ function SolidColor({
           "h-0 overflow-hidden px-2",
           {"h-auto pb-2": show}
         )}>
-          {/* popover */}
-          <HexColorPicker color={hex}
-          onChange={(color) => {
-            console.log("changing input")
-            onChangeHex(color);
-          }}/>
+          <HexColorPicker
+            color={background.solidColor}
+            onChange={(color) => onChangeHex(color)}
+          />
         </div>
       </div>
     </>

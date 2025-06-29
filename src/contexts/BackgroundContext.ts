@@ -1,4 +1,4 @@
-import { BackgroundSettings } from "@/components/Result";
+import { BackgroundSettings } from "@/components/Providers";
 import { createContext, useContext } from "react";
 
 export interface BackgroundContextType {

@@ -97,7 +97,7 @@ export default function Home() {
   return (
     <>
       <div className="mx-auto w-full flex flex-col p-4 justify-between min-h-lvh sm:max-w-wsm md:max-w-wmd">
-        <div className="mt-16 mb-8">
+        <div className="mt-16 mb-8 sm:mt-38">
           <Hero />
           <form onSubmit={handleSubmit} className="w-full mx-auto md:w-wsm">
             <label htmlFor="url-input" hidden>Post URL</label>

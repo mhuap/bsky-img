@@ -57,7 +57,19 @@
   }
 
   .card-shadow {
-    box-shadow: rgba(0,0,0,0.1) 0px 8px 24px 0px;
+    box-shadow: rgba(0,0,0,0.2) 0px 8px 24px 0px;
+  }
+
+  .checkered {
+    background: conic-gradient(
+      var(--color-input-light) 90deg,
+      var(--color-input) 90deg 180deg,
+      var(--color-input-light) 180deg 270deg,
+      var(--color-input) 270deg
+    );
+    background-repeat: repeat;
+    background-size: 40px 40px;
+    background-position: top left
   }
 
   /* #hex-color-picker .react-colorful{

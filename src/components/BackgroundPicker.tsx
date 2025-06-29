@@ -1,46 +1,71 @@
-import { Trash2 } from 'lucide-react';
+import { CircleX, Image, Link } from 'lucide-react';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 // import { ColorChangeHandler } from 'react-color';
-import { BgMode, ImgFilter } from '@/util/enums';
+import { ImgFilter } from '@/util/enums';
 import { swatchCSS } from '@/util/gradientCSS';
 import { useCardContext } from '@/contexts/CardContext';
 import { useBackgroundContext } from '@/contexts/BackgroundContext';
 
-import GradientSwatch, { GRADIENTS } from './GradientSwatch';
+import GradientSwatch, { GRADIENTS, GradientKey } from './GradientSwatch';
 import SolidColor from "./SolidColor";
 import PhotoUpload from './PhotoUpload';
+import UnsplashIcon from "./unsplashIcon.js";
+import Radio from './Radio';
 
 function BackgroundPicker() {
   const { card, setCard } = useCardContext();
   const { background, setBackground } = useBackgroundContext();
 
-  const onColorChange = (color: any, event: any) => setBackground({...background, solidColor: color.hex});
   const fileName = background.selectedFile?.name;
   
-  const onClickTrash = () => setBackground({
-    ...background,
-    bgImg: null,
-    selectedFile: null,
-    imgFilter: ImgFilter.Default
-  });
+  const onClickTrash = () => {
+    setBackground({
+      ...background,
+      bgImg: undefined,
+      selectedFile: undefined,
+      imgFilter: ImgFilter.Default,
+      imgMethod: undefined
+    });
+    setCard({
+      ...card,
+      whiteBg: true
+    });
+  };
+
+  let icon = null;
+  if (fileName && background.imgMethod) {
+    switch (background.imgMethod) {
+      case "UPLOAD":
+        icon = <Image size={16}/>
+        break;
+      case "URL":
+        icon = <Link size={16}/> 
+        break;
+      case "UNSPLASH":
+        icon = <UnsplashIcon /> 
+        break;
+      default:
+        throw new Error("Unknown image background method.");
+    }
+  }
 
   return (
-    <Tabs defaultValue="solid">
+    <Tabs defaultValue={background.mode.toLowerCase()}>
       <TabsList>
-        <TabsTrigger value="solid" onClick={() => {setCard({...card, whiteBg: true}); setBackground({...background, mode: BgMode.Solid});}}>Solid</TabsTrigger>
-        <TabsTrigger value="gradient" onClick={() => {setCard({...card, whiteBg: true}); setBackground({...background, mode: BgMode.Gradient});}}>Gradient</TabsTrigger>
-        <TabsTrigger value="image" onClick={() => {setCard({...card, whiteBg: true}); setBackground({...background, mode: BgMode.Image, imgFilter: ImgFilter.Default});}}>Image</TabsTrigger>
+        <TabsTrigger value="solid" onClick={() => {setCard({...card, whiteBg: true}); setBackground({...background, mode: "SOLID", imgMethod: undefined});}}>Solid</TabsTrigger>
+        <TabsTrigger value="gradient" onClick={() => {setCard({...card, whiteBg: true}); setBackground({...background, mode: "GRADIENT", imgMethod: undefined});}}>Gradient</TabsTrigger>
+        <TabsTrigger value="image" onClick={() => {setCard({...card, whiteBg: background.imgFilter === ImgFilter.Default, shadow: background.imgFilter === ImgFilter.Default}); setBackground({...background, mode: "IMAGE", imgFilter: background.imgFilter});}}>Image</TabsTrigger>
       </TabsList>
       <TabsContent value="solid">
-        <SolidColor hex={background.solidColor} onChange={onColorChange} onChangeHex={(solidColor) => setBackground({...background, solidColor})}/>
+        <SolidColor />
       </TabsContent>
       <TabsContent value="gradient">
         <div className='flex flex-wrap gap-2'>
           {Object.entries(GRADIENTS).map(
             ([key, value]) => (
               <GradientSwatch
-                id={key}
+                id={key as GradientKey}
                 key={key}
                 css={swatchCSS(value)}
               />
@@ -52,17 +77,33 @@ function BackgroundPicker() {
         {fileName ? (
           // if file selected, show file name and image filter options
           <>
-            <div className="w-full flex items-center justify-between h-11">
-              <div className="rounded-l-md border-2 border-input border-r-0 p-2 overflow-ellipsis overflow-hidden whitespace-nowrap grow">{fileName}</div>
-              <button className="text-white bg-danger w-11 p-2 rounded-r-md h-full" onClick={onClickTrash}>
-                <Trash2 className="mx-auto"/>
+            {/* <p className='text-xs tracking-wide mt-2'>Selected image</p> */}
+            <div className="w-full flex items-center p-3 bg-muted rounded-md">
+              <div>{icon}</div>
+              <div className="text-sm overflow-ellipsis overflow-hidden whitespace-nowrap italic grow ml-2 mr-2">
+                {fileName}
+              </div>
+              <button className="" onClick={() => onClickTrash()}>
+                <CircleX size={16}/>
               </button>
             </div>
+            <p className='text-xs tracking-wide mt-2'>Filters</p>
             <div className="flex flex-col ml-1">
-            {/* id='dark-light-radio' */}
-              <label><input type='radio' name='dark-light' onClick={() => setBackground({...background, imgFilter: ImgFilter.Default})} defaultChecked={background.imgFilter === ImgFilter.Default}/>Default</label>
-              <label><input type='radio' name='dark-light' onClick={() => {setBackground({...background, imgFilter: ImgFilter.Dark}); setCard({...card, whiteBg: false, shadow: false});}} defaultChecked={background.imgFilter === ImgFilter.Dark}/>Dark</label>
-              <label><input type='radio' name='dark-light' onClick={() => {setBackground({...background, imgFilter: ImgFilter.Light}); setCard({...card, whiteBg: false, shadow: false});}} defaultChecked={background.imgFilter === ImgFilter.Light}/>Light</label>
+              <Radio
+                label="None"
+                onClick={() => {setBackground({...background, imgFilter: ImgFilter.Default}); setCard({...card, whiteBg: true})}}
+                defaultChecked={background.imgFilter === ImgFilter.Default}
+              />
+              <Radio
+                label="Dark"
+                onClick={() => {setBackground({...background, imgFilter: ImgFilter.Dark}); setCard({...card, whiteBg: false, shadow: false});}}
+                defaultChecked={background.imgFilter === ImgFilter.Dark}
+              />
+              <Radio
+                label="Light"
+                onClick={() => {setBackground({...background, imgFilter: ImgFilter.Light}); setCard({...card, whiteBg: false, shadow: false});}}
+                defaultChecked={background.imgFilter === ImgFilter.Light}
+              />
             </div>
           </>
         ) : (

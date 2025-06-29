@@ -3,65 +3,36 @@ import React, { useState }from "react";
 
 import PostDTO from "@/app/api/bsky/PostDTO";
 import { AspectRatio } from "./ui/aspect-ratio";
-import { BgMode, ImgFilter } from "@/util/enums";
+import { ImgFilter } from "@/util/enums";
 import { luminosity } from "@/util/luminosity";
 import { bgCSS } from "@/util/gradientCSS";
 
-import Providers from "./Providers";
 import Tweet from './Tweet';
 import BackgroundPicker from './BackgroundPicker';
 import Sidebar from './Sidebar';
 import { GRADIENTS } from "./GradientSwatch";
+import { useCardContext } from "@/contexts/CardContext";
+import { useBackgroundContext } from "@/contexts/BackgroundContext";
+import { cn } from "@/lib/utils";
 
-export interface CardSettings {
-  rounded: boolean,
-  border: boolean,
-	whiteBg: boolean,
-	shadow: boolean,
-  singleTextColor?: string
-}
-
-export interface BackgroundSettings {
-  mode: BgMode,
-  solidColor: string,
-  // gradientCSS: string,
-  gradientId: string,
-  bgImg: ArrayBuffer | string | null,
-  selectedFile: File | null,
-  imgFilter: ImgFilter,
+interface EditorProps {
+  post: PostDTO,
+  onGenerate: (e: any) => void,
+  genLoading: boolean
 }
 
 function Editor({
   post,
   onGenerate,
   genLoading
-} : {
-  post: PostDTO,
-  onGenerate: (e: any) => void,
-  genLoading: boolean
-}){
-  // props.quoted existed
-
-  const [card, setCard] = useState<CardSettings>({
-    rounded: true,
-    border: false,
-    whiteBg: true,
-    shadow: true
-  })
-
-  const [background, setBackground] = useState<BackgroundSettings>({
-    mode: BgMode.Solid,
-    solidColor: "#E1E8ED",
-    gradientId: "g1",
-    bgImg: null,
-    selectedFile: null,
-    imgFilter: ImgFilter.Default,
-  })
+} : EditorProps ){
+  const { card } = useCardContext();
+  const { background } = useBackgroundContext();
 
   let bgStyle = background.solidColor;
-  let textColor: string | undefined = undefined;
+  let textColor: "black" | "white" | undefined;
 
-  if (background.mode === BgMode.Solid && !card.whiteBg){
+  if (background.mode === "SOLID" && !card.whiteBg){
     // solid mode, no card.whiteBg
     const l = luminosity(background.solidColor);
     if (l >= 135){
@@ -69,7 +40,7 @@ function Editor({
     } else {
       textColor = "white";
     }
-  } else if (background.mode === BgMode.Image && background.bgImg) {
+  } else if (background.mode === "IMAGE" && background.bgImg) {
     // image mode, image selected
     const defString = `center/cover url(${background.bgImg}) ${background.solidColor}`
     // set image filter
@@ -83,20 +54,27 @@ function Editor({
       bgStyle = ImgFilter.Light + defString;
       textColor = "black";
     }
-  } else if (background.mode === BgMode.Gradient) {
+  } else if (background.mode === "GRADIENT") {
     // gradient mode
-    const gradient = GRADIENTS[background.gradientId as keyof typeof GRADIENTS];
+    const gradient = GRADIENTS[background.gradientId];
     bgStyle = bgCSS(gradient);
   }
 
+  const ifStyle = (background.mode === "IMAGE" && !background.bgImg) ? undefined : {background: bgStyle};
+
+  // shadow-[inset_rgba(0,0,0,.11)_0_0_0_1px]
   return (
-    <Providers card={{card, setCard}} background={{background, setBackground}}>
+    <>
       <div className="w-full md:w-2/3">
-        <label className='section-label'>Preview</label>
-        <div id="preview"className='mb-3 w-full'>
+        <label className="section-label">Preview</label>
+        <div id="preview" className="mb-3 w-full">
           <AspectRatio ratio={1}
-            className="flex items-center shadow-[inset_rgba(0,0,0,.11)_0_0_0_1px] bg-center bg-cover"
-            style={{background: bgStyle}}
+            className={cn(
+              "flex items-center bg-center",
+              {"bg-cover": ifStyle},
+              {"checkered": !ifStyle}
+            )}
+            style={ifStyle}
           >
             <Tweet
               post={post}
@@ -109,16 +87,11 @@ function Editor({
       <Sidebar
         onGenerate={onGenerate}
         genLoading={genLoading}
-        // imageCropDisabled={mainTweet.tweet.media && mainTweet.tweet.media.length == 1}
-        // onSwitchImageCrop={() => setImageCrop(!imageCrop)}
       >
-        <BackgroundPicker
-          // onClickGradient={onClickGradient}
-          // unsplashPhotoClick={unsplashPhotoClick}
-        />
+        <BackgroundPicker />
 
       </Sidebar>
-    </Providers>
+    </>
   );
 }
 

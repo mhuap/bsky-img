@@ -33,7 +33,7 @@ function Tweet({
 
   // TODO: deal with media
   // TODO: is this still necessary?
-  // ?? unencode html entities from urls in post
+  //       unencode html entities from urls in post
   // TODO: deal with urls and mentions
   // TODO: deal with quoted post
 

@@ -12,18 +12,20 @@ export const GRADIENTS = {
   g8: {start: '#7f00ff', end: '#E75BFF'}
 };
 
+export type GradientKey = keyof typeof GRADIENTS;
+
 export default function GradientSwatch({
   id,
   css
 } : {
-  id: string,
+  id: GradientKey,
   css: string
 }) {
   const { background, setBackground } = useBackgroundContext();
   const isSelected = background.gradientId === id;
 
   const handleGradientChange = (e: any) => {
-    const gId: string = e.target.value;
+    const gId: GradientKey = e.target.value;
     setBackground({
       ...background,
       gradientId: gId

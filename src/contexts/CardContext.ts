@@ -1,4 +1,4 @@
-import { CardSettings } from "@/components/Result";
+import { CardSettings } from "@/components/Providers";
 import { createContext, useContext } from "react";
 
 export interface CardContextType {

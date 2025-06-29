@@ -1,7 +1,10 @@
 import { useState } from "react";
 import * as htmlToImage from 'html-to-image';
+
+import { ChevronLeft } from 'lucide-react';
 import PostDTO from "@/app/api/bsky/PostDTO";
 import Editor from "./Editor";
+import Providers from "./Providers";
 
 export default function ContentContainer({
   post
@@ -19,12 +22,6 @@ export default function ContentContainer({
     const exportSize = 2;
     const width = node.offsetWidth * exportSize;
     const height = node.offsetHeight * exportSize;
-    // const width = node.offsetWidth;
-    // const height = node.offsetHeight;
-
-    console.log(width); // 1008
-
-    // const size = "200px" // 512
     const config = {
       style: {
         transform: `scale(${exportSize})`,
@@ -41,47 +38,40 @@ export default function ContentContainer({
       .toJpeg(node, config)
       .then((dataUrl) => {
         setResultImg(dataUrl);
+        setGenLoading(false);
       })
       .catch(function (error) {
         console.error('dom-to-image: oops, something went wrong!', error);
       });
   }
 
-  // const unsplashPhotoClick = (e, downloadLocation) => {
-  //   e.preventDefault()
-
-  //   const src = e.target.src;
-  //   // setSelectedFile({name: 'Unsplash image'});
-  //   setBgImg(src);
-  //   setModalShow(false);
-  //   axios.post('/api/unsplash', {
-  //     downloadLocation
-  //   })
-  //   .catch(error => console.log(error))
-  // }
-
   // const onClickGradient = (a, b) => {
   //   // setSelectedFile(null);
   //   setBgImg("");F
   // }
 
-  return (<>{
+  return (<Providers>{
     resultImg ? (
       <div className="max-w-wsm mx-auto mb-4">
+        <button
+          className="text-primary flex items-center mb-4"
+          onClick={() => setResultImg(null)}
+        >
+          <ChevronLeft className="ml-[-4px]"/>
+          Back to editing
+        </button>
         <img
           className="w-full"
           src={resultImg}
           alt={`Bluesky post that says: ${post.text}`}
-          width={500}
-          height={500}
         />
         <small className="block text-center text-secondary mt-2"><a href={resultImg} download={`Bluesky post by ${post.author.handle}`}>download here</a></small>
       </div>
     ) : (
-      <Editor
-        post={post}
-        onGenerate={onGenerate}
-        genLoading={genLoading}
-      />
-    )}</>);
+        <Editor
+          post={post}
+          onGenerate={onGenerate}
+          genLoading={genLoading}
+        />
+    )}</Providers>);
 }
